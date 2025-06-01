@@ -1,0 +1,52 @@
+.container {
+    display: flex;
+    flex: 1;
+    /*min-width: 30%;*/
+    max-width: 100%;
+    max-height: fit-content;
+    padding: 10px;
+    margin: 20px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    position: relative;
+}
+
+.messageSelf {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.messageNotSelf {
+    display: flex;
+    flex-direction: row;
+}
+
+.messageBody {
+    min-width: 50%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: inline-block;
+}
+
+.messageContent {
+    min-width: 250px;
+    background-color: #6d756c;
+    border: 2px solid #d30909;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.messageMeta {
+    padding-bottom: 5px;
+    padding-left: 10px;
+    position: absolute;
+    top: -12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.para {
+    padding: 10px;
+    font-size: 15px;
+}

@@ -1,0 +1,31 @@
+.welcomeContainer {
+    background-color: #4b4c4b;
+    width: inherit;
+    /*top:50px;
+    bottom: 70px;*/
+    flex: 1;
+}
+
+.chatContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    width: inherit;
+    /*top:50px;
+    bottom: 70px;*/
+    flex-direction: column;
+    background-color: #b392e4;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.messageSelf {
+    align-self: flex-end;
+    max-width: 70%;
+}
+
+.messageNotSelf {
+    align-self: flex-start;
+    max-width: 70%
+}
+

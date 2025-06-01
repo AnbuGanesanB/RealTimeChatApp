@@ -1,0 +1,130 @@
+.container {
+    background-color: #ac7db3;   /* For visibility */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.toprow {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+}
+
+.avatarBase {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.avatarDp {
+    composes: avatarBase;
+    object-fit: cover;
+}
+
+.editButton {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: center;
+    cursor: pointer;
+}
+
+.initials {
+    composes: avatarBase;
+    color: #535bf2;
+    background-color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarWrapper {
+    position: relative;
+}
+
+.statusIndicator {
+    padding: 0;
+    margin: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 3;
+    bottom: 0px;
+    right: 5px;
+    position: absolute;
+}
+
+.profileInfo {
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.statusSelector {
+    border-radius: 5px;
+    display: none;
+    position: absolute;
+    top: 15px;
+    padding: 5px;
+    background-color: #774d7c;
+    min-height: 120px;
+    width: 170px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.status{
+    display: block;
+}
+
+.statusButton {
+    border-radius: 5px;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 30px;
+    padding: 4px 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    outline: none;
+    overflow: hidden;
+}
+
+.statusButton:hover {
+    background-color: #535bf2;
+}
+
+.statusColor {
+    padding: 5px;
+    margin: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.statusName {
+    flex: 1;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.avatarWrapper button:hover .statusSelector{
+    display: block;
+}

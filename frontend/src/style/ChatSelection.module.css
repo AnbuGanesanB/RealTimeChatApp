@@ -1,0 +1,71 @@
+.chatSelectionComponent {
+    background-color: #be5ec5;   /* For visibility */
+}
+
+.userContactsPageCard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+    bottom: 0;
+    background-color: inherit;
+}
+
+.customTabNav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    padding: 10px 0;
+    border-bottom: 2px solid #ccc;
+}
+
+.customTabButton {
+    flex: 1;
+    /*border-bottom: 2px solid transparent;*/
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #c83333;
+}
+
+.customTabButtonActive {
+    /*border: 1px solid #ccc;*/
+    border-bottom: none;
+    background-color: burlywood;
+}
+
+.customTabButtonInactive {
+    color: #007bff;
+}
+
+.customTabContent {
+    max-height: 80vh;
+    overflow-y: scroll;
+    flex: 1;
+    padding: 10px;
+}
+
+.customTabPane {
+    position: relative;
+}
+
+.newContactSearch {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid red;
+    padding-left: 10px;
+    padding-right: 30px;
+}
+
+.searchClear {
+    position: absolute;
+    right: 5px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-Size: 16px;
+    /*padding-left: 5px;*/
+}

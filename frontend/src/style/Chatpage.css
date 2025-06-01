@@ -1,0 +1,62 @@
+html, body, .chat-selection-component {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.chat-page {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    height: 100%;
+}
+
+.left-layout {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 20% 80%;
+    background-color: #f0f0f0;   /* For visibility */
+}
+
+.right-layout {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #e6e6e6;   /* For visibility */
+}
+
+.message-util {
+    bottom:0;
+    padding: 10px;
+    background-color: #888888;
+    width: inherit;
+    min-height: 60px;
+    flex-shrink: 0;
+}
+
+.message-input {
+    position: relative;
+    padding-left: 15px;
+    padding-right: 15px;
+    left: 5%;
+    height: 30px;
+    width: 100%;
+    border-radius: 15px;
+}
+
+.message-icons {
+    position: relative;
+    padding-left: 20%;
+}
+
+.nav-link {
+    padding: 0 !important; /* Remove Bootstrap default padding */
+    height: 50px; /* Set a fixed height for uniformity */
+    display: flex;
+    align-items: center; /* Vertically center text */
+    justify-content: center; /* Horizontally center text */
+    text-align: center;
+    white-space: nowrap; /* Prevent multi-line text wrapping */
+}
+
+
+

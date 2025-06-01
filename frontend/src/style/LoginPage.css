@@ -1,0 +1,14 @@
+html {
+    margin: 0;
+}
+
+.login-page-card {
+    padding: 10px;
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    top: 100px;
+    right: 150px;
+    border: 3px solid #cc3263;
+    border-radius: 15px;
+}

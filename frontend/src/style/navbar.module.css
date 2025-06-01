@@ -1,0 +1,97 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px;
+    background-color: #8e08a3;
+    width: inherit;
+    height: 70px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.navIcons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.mainIconsUl {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mainIconsLi {
+    /*position: relative;*/
+    margin-right: 40px;
+    display: inline-block;
+    padding: 10px;
+    align-items: center;
+}
+
+.navMenus {
+    border: none;
+    background: transparent;
+}
+
+.navMenus i {
+    font-size: 30px;
+    padding: 0;
+    color: black;
+    cursor: pointer;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 4%;
+    background-color: #5ecc32;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    width: max-content;
+    /*min-height: 70px;*/
+    z-index: 5;
+    row-gap: 20px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    row-gap: 5px;
+}
+
+.menus {
+    display: block;
+}
+
+.navIcons li:hover .submenu {
+    display: block;
+}
+
+.menuButton {
+    text-align: left;
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+
+.submenu li button:hover {
+    background: #007bff;
+}
+
+.submenu i {
+    /*padding-right: 10px;*/
+}

@@ -1,0 +1,19 @@
+# Root
+.DS_Store
+*.log
+.env
+*.iml
+.idea/
+
+# Backend (Java/Spring Boot)
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# Frontend (Node/Vite/React)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.eslintcache
+
