@@ -47,20 +47,26 @@ function Message({message}){
 
         return (
             <>
-                <div key={index}>
+                <div className={styles.image} key={index}>
                     {isImage ? (
                         <>
-                            <img
-                                src={`http://localhost:8080/files/${file.uniqueFileName}`}
-                                style={{ maxWidth: "200px", marginBottom: "8px" }}
-                            />
+                            <a
+                                href={`http://localhost:8080/files/preview/${file.uniqueFileName}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <img className={styles.image}
+                                    src={`http://localhost:8080/files/preview/${file.uniqueFileName}`}
+                                    style={{ maxWidth: "200px", marginBottom: "8px" }}
+                                />
+                            </a>
                             <br />
-                            <a href={`http://localhost:8080/files/${file.uniqueFileName}`} download={`${file.originalFileName}`}>
-                                <i class="bi bi-download"></i>{/*Download {file.originalFileName}*/}
+                            <a href={`http://localhost:8080/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
+                                <i className={`bi bi-download ${styles.imageDownload}`} />
                             </a>
                         </>
                     ) : (
-                        <a href={`http://localhost:8080/files/${file.uniqueFileName}`} download={`${file.originalFileName}`}>
+                        <a className={styles.fileDownload} href={`http://localhost:8080/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
                             {file.originalFileName}
                         </a>
                     )}

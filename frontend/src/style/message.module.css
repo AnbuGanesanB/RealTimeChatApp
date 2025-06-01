@@ -50,3 +50,29 @@
     padding: 10px;
     font-size: 15px;
 }
+
+.image {
+    padding: 10px;
+    align-self: center;
+    position: relative;
+}
+
+.imageDownload {
+    position: absolute;
+    z-index: 5;
+    color: #dd0f0f;
+    top: 20px;
+    left: 20px;
+    display: none;
+}
+
+.fileDownload {
+    color: #dd0f0f;
+    padding: 10px;
+    align-self: flex-start;
+    font-size: 15px;
+}
+
+.image:hover .imageDownload {
+    display: block;
+}

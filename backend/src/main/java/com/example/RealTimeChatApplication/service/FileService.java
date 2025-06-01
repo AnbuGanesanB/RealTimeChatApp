@@ -74,4 +74,10 @@ public class FileService {
         }
         return user;
     }
+
+    public String getOriginalFileName(String uniqueFileName){
+        return fileRepo.findByUniqueFileName(uniqueFileName)
+                .map(SharedFile::getOriginalFileName)
+                .orElse(null);
+    }
 }
