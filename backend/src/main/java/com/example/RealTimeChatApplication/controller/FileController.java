@@ -34,18 +34,15 @@ public class FileController {
     @Value("${file.displayPictureDirectory}")
     private String displayPictureDirectory;
 
-    @GetMapping("/files/{filename:.+}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename){
+    @GetMapping("/files/preview/{filename:.+}")
+    public ResponseEntity<Resource> getFilePreview(@PathVariable String filename){
 
         try{
-            System.out.println("Incoming req. file name:"+filename);
+
             Path fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
-            System.out.println("fileStorageLocation:"+fileStorageLocation);
             Path targetPath = fileStorageLocation.resolve(filename).normalize();
-            System.out.println("targetPath"+targetPath);
 
             Resource resource = new UrlResource(targetPath.toUri());
-            System.out.println("Resource file name:"+resource.getFilename());
 
             // Check that the resolved path is still under uploadDir
             // If not - reject the request
@@ -62,10 +59,51 @@ public class FileController {
                 contentType = "application/octet-stream";
             }
 
+            String originalFileName = fileService.getOriginalFileName(filename);
+
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + originalFileName + "\"")
                     .body(resource);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @GetMapping("/files/download/{filename:.+}")
+    public ResponseEntity<Resource> getFileDownload(@PathVariable String filename){
+
+        try{
+
+            Path fileStorageLocation = Paths.get(uploadDirectory).toAbsolutePath().normalize();
+            Path targetPath = fileStorageLocation.resolve(filename).normalize();
+
+            Resource resource = new UrlResource(targetPath.toUri());
+
+            // Check that the resolved path is still under uploadDir
+            // If not - reject the request
+            if (!targetPath.startsWith(fileStorageLocation)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType = Files.probeContentType(targetPath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            String originalFileName = fileService.getOriginalFileName(filename);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalFileName + "\"")
+                    .body(resource);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -76,14 +114,11 @@ public class FileController {
     public ResponseEntity<Resource> getProfilePic(@PathVariable String filename){
 
         try{
-            System.out.println("Incoming req. file name:"+filename);
+
             Path fileStorageLocation = Paths.get(displayPictureDirectory).toAbsolutePath().normalize();
-            System.out.println("fileStorageLocation:"+fileStorageLocation);
             Path targetPath = fileStorageLocation.resolve(filename).normalize();
-            System.out.println("targetPath"+targetPath);
 
             Resource resource = new UrlResource(targetPath.toUri());
-            System.out.println("Resource file name:"+resource.getFilename());
 
             // Check that the resolved path is still under uploadDir
             // If not - reject the request
