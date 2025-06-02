@@ -29,6 +29,8 @@
     justify-content: center;
     vertical-align: center;
     cursor: pointer;
+    background-color: #cac00b;
+    border-radius: 5px;
 }
 
 .initials {

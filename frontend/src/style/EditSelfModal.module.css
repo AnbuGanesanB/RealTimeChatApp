@@ -1,0 +1,109 @@
+.modalBody {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+    bottom: 0;
+    background-color: inherit;
+}
+
+.customModalTabNav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    padding: 10px 0;
+    border-bottom: 2px solid #ccc;
+}
+
+
+.customTabNavButton {
+    flex: 1;
+    /*border-bottom: 2px solid transparent;*/
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #c83333;
+}
+
+.customTabNavButtonActive {
+    /*border: 1px solid #ccc;*/
+    border-bottom: none;
+    background-color: burlywood;
+}
+
+.customTabNavButtonInactive {
+    color: #007bff;
+}
+
+.customModalTabContent {
+    flex: 1;
+    padding: 10px;
+}
+
+.customModalTextInput {
+    flex: 1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    border: 1px solid #8f1414;
+    border-radius: 5px;
+}
+
+.imageContainer {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: relative;
+    border: 1px solid #8f1414;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.imageEdit, .imageRemove {
+    position: absolute;
+    z-index: 5;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #df8787;
+}
+
+.imageEdit {
+    bottom: 25px;
+    right: 5px;
+}
+
+.imageRemove {
+    top: 25px;
+    right: 5px;
+}
+
+.hiddenFileInput {
+    display: none;
+}
+
+.noImage {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: #971b1b;
+    font-size: 48px;
+    text-align: center;
+    line-height: 200px;
+}
