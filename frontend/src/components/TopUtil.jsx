@@ -2,15 +2,10 @@ import {useUserContext} from "../context/UserContext.jsx";
 import toputil from '../style/topUtil.module.css';
 import StatusSelector from './StatusSelector.jsx';
 
-function TopUtil(){
+function TopUtil({ onEditSelfProfile }){
 
-    const {user} = useUserContext();
-    const statusColors = {
-        ONLINE: '#28a745',
-        DO_NOT_DISTURB: '#dd0f0f',
-        AWAY: '#ffc107',
-        OFFLINE: '#9e9e9e',
-    };
+    const {user, statusColors} = useUserContext();
+
     const statusColor = statusColors[user.onlineStatus];
 
     return (
@@ -32,7 +27,7 @@ function TopUtil(){
                     <div>{user.aboutMe || " "}</div>
                 </div>
             </div>
-            <button className={toputil.editButton} type="button" data-bs-toggle="modal" data-bs-target="#editSelfModal">
+            <button className={toputil.editButton} type="button" onClick={onEditSelfProfile}>
                 <i className="bi bi-three-dots" />
             </button>
         </div>)

@@ -3,6 +3,8 @@ import {useState} from "react";
 import {useContactsContext} from "../context/ContactsContext.jsx";
 import {useUserContext} from "../context/UserContext.jsx";
 import {sendNewGroupRequest} from "../service/service.js";
+import {useBootstrapModalClose,modalHide} from "../service/utilities.js";
+import {Modal} from "bootstrap";
 
 function IndividualContact({contact, setSelectedContactIds, selectedContactIds}){
 
@@ -37,7 +39,7 @@ function IndividualContact({contact, setSelectedContactIds, selectedContactIds})
     );
 }
 
-function AddGroupModal() {
+function AddGroupModal({onClose}) {
 
     const {contacts} = useContactsContext();
     const {user} = useUserContext();
@@ -45,16 +47,22 @@ function AddGroupModal() {
     const [groupName, setGroupName] = useState("");
     const [selectedContactIds, setSelectedContactIds] = useState([user.userId]);
 
+    useBootstrapModalClose("addGroupModal",onClose);
+
     const handleNewName = (e) => {
         setGroupName(e.target.value);
     };
 
-    function handleNewGroupCreation(e) {
+    async function handleNewGroupCreation(e) {
         e.preventDefault();
-        selectedContactIds.forEach(contactId => {console.log(contactId+" is selected")});
-        const addGroupData = {name:groupName,members:selectedContactIds};
-        sendNewGroupRequest(addGroupData);
-    };
+        selectedContactIds.forEach(contactId => {
+            console.log(contactId + " is selected")
+        });
+        const addGroupData = {name: groupName, members: selectedContactIds};
+        await sendNewGroupRequest(addGroupData);
+
+        modalHide("addGroupModal");
+    }
 
     return createPortal(
         <>

@@ -4,6 +4,7 @@ import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import {useContactsContext} from "../context/ContactsContext.jsx";
 import {sendEditGroupRequest,sendEditContactRequest} from "../service/service.js";
 import {useRecipientContext} from "../context/RecipientContext.jsx";
+import {modalHide, useBootstrapModalClose} from "../service/utilities.js";
 
 
 function NewMemberComp({contact, setNewMemberIds}){
@@ -66,7 +67,7 @@ function OldMemberComp({existingUser, newMemberIds, setNewMemberIds}){
     )
 }
 
-function EditGroupContactModal(){
+function EditGroupContactModal({onClose}){
 
     const {recipientId} = useRecipientContext();
     const {contacts} = useContactsContext();
@@ -79,12 +80,13 @@ function EditGroupContactModal(){
     const [oldMemberIds, setOldMemberIds] = useState([]);       // User-ID's    (old members)
     const [newMemberIds, setNewMemberIds] = useState([]);       // User-ID's    (new members)
 
+    useBootstrapModalClose("editGroupModal",onClose);
 
     const handleEditGroupDetails = (e)=>{
         e.preventDefault();
         console.log("Edit Triggered:--")
         newMemberIds.forEach(memberId => {console.log(memberId," is selected")});
-
+        modalHide("editGroupModal");
     }
 
     useEffect(() => {

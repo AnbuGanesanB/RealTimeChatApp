@@ -4,7 +4,7 @@ import NavbarSubmenuComp from "./NavbarSubmenuComp.jsx";
 import NavContactDisplay from "./NavContactDisplay.jsx";
 import styles from '../style/navbar.module.css'
 
-function NavBar(){
+function NavBar(props){
 
     const {selectedContactDetails} = useSelectedContactContext();
 
@@ -18,18 +18,18 @@ function NavBar(){
                     <li className={styles.mainIconsLi}>
                         <button className={styles.navMenus} type="button"
                                 disabled={selectedContactDetails.id === 0 || selectedContactDetails.id === null}
-                                data-bs-toggle="modal"
-                                data-bs-target={selectedContactDetails.type==="GROUP" ? "#editGroupModal" : "#editUserModal"}>
+                                title={selectedContactDetails.type==="GROUP" ? "Edit Group" : "Edit User Contact"}
+                                onClick={selectedContactDetails.type==="GROUP" ? props.onEditGroupContact : props.onEditUserContact}>
                             <i className="bi bi-person-fill-gear"></i>
                         </button>
                     </li>
                     <li className={styles.mainIconsLi}>
-                        <button className={styles.navMenus} type="button" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                        <button className={styles.navMenus} type="button" title="Add Group" onClick={props.onAddGroup}>
                             <i className="bi bi-people-fill"></i>
                         </button>
                     </li>
                     <li className={styles.mainIconsLi}>
-                        <button className={styles.navMenus} type="button"><i className="bi bi-list"></i></button>
+                        <button className={styles.navMenus} type="button" title="Settings"><i className="bi bi-list"></i></button>
                         <NavbarSubmenuComp />
                     </li>
                 </ul>

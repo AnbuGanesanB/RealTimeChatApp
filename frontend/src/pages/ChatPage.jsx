@@ -12,26 +12,39 @@ import EditGroupContactModal from "../modals/EditGroupContactModal.jsx";
 import EditUserContactModal from "../modals/EditUserContactModal.jsx";
 import EditSelfModal from "../modals/EditSelfModal.jsx";
 import { useSideEffects } from "./SideEffects.jsx"
+import {useState} from "react";
 
 function ChatPage(){
     const {recipientId} = useRecipientContext();
+
+    const [showEditSelfModal, setShowEditSelfModal] = useState(false);
+    const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+    const [showEditGroupContactModal, setShowEditGroupContactModal] = useState(false);
+    const [showEditUserContactModal, setShowEditUserContactModal] = useState(false);
+
     useSideEffects();
     return (
         <div className="chat-page">
             <div className="left-layout">
-                <TopUtil />
+                <TopUtil onEditSelfProfile={() => setShowEditSelfModal(true)}/>
                 <ChatSelectionComponent />
             </div>
             <div className="right-layout">
-                <NavBar />
+                <NavBar onAddGroup={() => setShowAddGroupModal(true)}
+                        onEditGroupContact={() => setShowEditGroupContactModal(true)}
+                        onEditUserContact={() => setShowEditUserContactModal(true)}/>
                 {recipientId ? <ChatDisplay /> : <WelcomeDisplayComp />}
                 <MessageUtil />
             </div>
             {/* Placing all the Modals related to Chat page here */}
-            <AddGroupModal />
-            <EditGroupContactModal />
-            <EditUserContactModal />
-            <EditSelfModal />
+            {showEditSelfModal && (
+                <EditSelfModal onClose={() => setShowEditSelfModal(false)}/>)}
+            {showAddGroupModal && (
+                <AddGroupModal onClose={() => setShowAddGroupModal(false)}/>)}
+            {showEditGroupContactModal && (
+                <EditGroupContactModal onClose={() => setShowEditGroupContactModal(false)}/>)}
+            {showEditUserContactModal && (
+                <EditUserContactModal onClose={() => setShowEditUserContactModal(false)}/>)}
         </div>)
 }
 

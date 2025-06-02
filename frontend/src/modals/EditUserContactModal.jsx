@@ -4,8 +4,10 @@ import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import {useContactsContext} from "../context/ContactsContext.jsx";
 import {sendEditGroupRequest,sendEditContactRequest} from "../service/service.js";
 import {useRecipientContext} from "../context/RecipientContext.jsx";
+import {useBootstrapModalClose,modalHide} from "../service/utilities.js";
+import {Modal} from "bootstrap";
 
-function EditUserContactModal(){
+function EditUserContactModal({onClose}){
 
     const {recipientId, setRecipientId} = useRecipientContext();
     const {contacts, setContacts} = useContactsContext();
@@ -14,8 +16,11 @@ function EditUserContactModal(){
     //const oldNickName = selectedContact.nickName;
     const[nickName, setNickName] = useState("");
 
+    useBootstrapModalClose("editUserModal",onClose);
+
     const handleEditUserDetails = (e)=>{
         e.preventDefault();
+        modalHide("editUserModal");
     }
 
     function handleNewNickName(e) {
