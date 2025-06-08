@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import './../style/LoginPage.css'
 import { useUserContext } from './../context/UserContext.jsx';
 import {useRecipientContext} from "../context/RecipientContext.jsx";
-import { notifyProfileUpdate } from './../service/service.js'
+import {fetchUser, notifyProfileUpdate} from './../service/service.js'
+import { BASE_URL } from '../config';
 
 function LoginPage() {
 
     const {setRecipientId} = useRecipientContext();
-    const { setUser } = useUserContext();
+    const { user, setUser } = useUserContext();
     const navigate = useNavigate();
 
     const handleSignInSubmit = async (event) => {
@@ -19,7 +20,7 @@ function LoginPage() {
         const credentials = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch("http://localhost:8080/signin", {
+            const response = await fetch(`${BASE_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(credentials),
@@ -35,21 +36,15 @@ function LoginPage() {
             event.target.reset();
             setRecipientId(0);
 
-            const loggedUser = {
-                userId: result.userId,
-                name: result.name,
-                emailId: result.emailId,
-                aboutMe: result.aboutMe,
-                dpAvailable: result.dpAvailable,
-                dpPath: result.dpPath,
-                initials: result.initials,
-                onlineStatus: result.onlineStatus,
-                isLoggedIn: true
-            };
-            setUser(loggedUser);
-            notifyProfileUpdate(result.userId);
+            if(result?.token){
+                localStorage.setItem("token", result.token);
 
-            navigate("/home");
+                const userInfos = await fetchUser();
+                setUser({ ...userInfos, isLoggedIn: true });
+
+                await notifyProfileUpdate(userInfos.userId);
+                navigate("/home");
+            }
 
         } catch (error) {
             console.error("Error:", error.message);
@@ -64,7 +59,7 @@ function LoginPage() {
         const newUserDetails = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch("http://localhost:8080/register", {
+            const response = await fetch(`${BASE_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUserDetails),
@@ -74,10 +69,8 @@ function LoginPage() {
                 throw new Error("Registration failed. Please try again!!.");
             }
 
-            //const result = await response.status.json();
             console.log("Registration Successful:");
 
-            // Clear form fields after success
             event.target.reset();
         } catch (error) {
             console.error("Error:", error.message);

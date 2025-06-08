@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Controller
-@CrossOrigin(origins = {"http://localhost:5175","ws://localhost:5175"})
 public class MessageController {
 
 

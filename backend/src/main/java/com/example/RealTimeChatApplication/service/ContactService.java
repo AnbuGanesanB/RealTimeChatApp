@@ -83,7 +83,7 @@ public class ContactService {
 
         contact.setType(RecipientType.USER);
         contact.setUnreadMessages(0);
-        contact.setNickName(contactPerson.getUserName());
+        contact.setNickName(contactPerson.getUsername());
         contact.setAddedDate(LocalDate.now());
 
         contact.setOwner(owner);
@@ -122,7 +122,7 @@ public class ContactService {
     }
 
     public void sendUpdatedContactMessageToUser(User member, Contact contact){
-        System.out.println("Member name:"+member.getUserName());
+        System.out.println("Member name:"+member.getUsername());
         ContactDetailsDto contactDetailsDto = contactDetailsMapper.retrieveContactDetails(contact);
         String dest = "/user/"+member.getId().toString()+"/queue/updatedContact";
         simpMessagingTemplate.convertAndSend(dest,contactDetailsDto);

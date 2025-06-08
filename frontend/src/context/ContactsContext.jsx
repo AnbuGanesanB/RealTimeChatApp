@@ -1,9 +1,12 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {useUserContext} from "./UserContext.jsx";
+import {BASE_URL} from "../config.js";
 
 const ContactsContext = createContext();
 
 export const ContactsProvider = ({children}) => {
+
+    const token = localStorage.getItem("token");
 
     const {user} = useUserContext();
     const [contacts, setContacts] = useState([]);
@@ -23,10 +26,13 @@ export const ContactsProvider = ({children}) => {
         if (!user?.userId) return; // Ensure user is available before fetching
 
         const fetchChatContacts = async () => {
+            console.log("fetchChatContacts");
             try {
-                const response = await fetch("http://localhost:8080/chatcontacts", {
+                const response = await fetch(`${BASE_URL}/chatcontacts`, {
+
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    //body: JSON.stringify({ loginUserId: 52 }),
                     body: JSON.stringify({ loginUserId: user.userId }),
                 });
 

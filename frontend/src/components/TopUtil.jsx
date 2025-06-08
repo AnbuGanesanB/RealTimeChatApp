@@ -1,6 +1,7 @@
 import {useUserContext} from "../context/UserContext.jsx";
 import toputil from '../style/topUtil.module.css';
 import StatusSelector from './StatusSelector.jsx';
+import {BASE_URL} from "../config.js";
 
 function TopUtil({ onEditSelfProfile }){
 
@@ -13,7 +14,7 @@ function TopUtil({ onEditSelfProfile }){
             <div className={toputil.toprow}>
                 <div className={toputil.avatarWrapper}>
                     {user.dpAvailable ?
-                        (<img className={toputil.avatarDp} src={`http://localhost:8080/dp/${user.dpPath}`}
+                        (<img className={toputil.avatarDp} src={`${BASE_URL}/dp/${user.dpPath}`}
                         />)
                         : (<div className={toputil.initials}>
                             {user.initials}

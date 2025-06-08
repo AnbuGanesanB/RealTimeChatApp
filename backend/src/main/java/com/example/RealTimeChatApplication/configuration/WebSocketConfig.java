@@ -1,5 +1,6 @@
 package com.example.RealTimeChatApplication.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,11 +16,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${frontend.allowed-origin}")
     private String allowedFrontEndPort;
 
+    @Autowired
+    private JwtHandshakeInterceptor jwtHandshakeInterceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws") // Correct endpoint for native WebSocket
-                .setAllowedOrigins("http://localhost:5175") // Frontend origin
-                ;
+                .addInterceptors(jwtHandshakeInterceptor)
+                .setAllowedOrigins(allowedFrontEndPort);
     }
 
     @Override

@@ -22,7 +22,6 @@ import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5175", exposedHeaders = "ContactId")
 public class ContactsController {
 
     private final UserService userService;

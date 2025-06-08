@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5175", exposedHeaders = "ContactId")
 public class GroupController {
 
     private final GroupService groupService;
