@@ -19,7 +19,7 @@ public class UserDetailMapper {
         UserDetailsDto userDetailsDto = new UserDetailsDto();
 
         userDetailsDto.setId(user.getId());
-        userDetailsDto.setName(user.getUserName());
+        userDetailsDto.setName(user.getUsername());
         userDetailsDto.setEmailId(user.getEmailId());
         userDetailsDto.setRecipientType(user.getType().toString());
 
@@ -34,7 +34,7 @@ public class UserDetailMapper {
         LoggedUserInfoDto loggedUserInfoDto = new LoggedUserInfoDto();
 
         loggedUserInfoDto.setUserId(user.getId());
-        loggedUserInfoDto.setName(user.getUserName());
+        loggedUserInfoDto.setName(user.getUsername());
         loggedUserInfoDto.setEmailId(user.getEmailId());
         loggedUserInfoDto.setInitials(user.getInitials());
         loggedUserInfoDto.setAboutMe(user.getAboutMe());

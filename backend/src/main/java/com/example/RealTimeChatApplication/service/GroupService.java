@@ -92,7 +92,7 @@ public class GroupService {
         Group group = getGroupById(groupId);
         //Set<Contact> contactOf = group.getContactOf();
         for(Contact contact:group.getContactOf()){
-            System.out.println("Sending Updated Contact to: "+contact.getOwner().getUserName());
+            System.out.println("Sending Updated Contact to: "+contact.getOwner().getUsername());
             contactService.sendUpdatedContactMessageToUser(contact.getOwner(),contact);
         }
     }

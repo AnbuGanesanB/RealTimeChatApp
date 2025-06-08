@@ -23,7 +23,6 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5175", exposedHeaders = "ContactId")
 public class FileController {
 
     private final FileService fileService;

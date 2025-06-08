@@ -2,6 +2,11 @@ import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {useUserContext} from "./UserContext.jsx";
 import {Client} from "@stomp/stompjs";
 import {useContactsContext} from "./ContactsContext.jsx";
+import { WS_URL } from '../config';
+
+const getToken = () => {
+    return localStorage.getItem("token");
+};
 
 const StompClientContext = createContext();
 
@@ -32,20 +37,24 @@ export const StompClientProvider = ({children}) => {
     };
 
 
+    /**
+     * On user Login -> Attempts to establish Websocket connection and thereby subscribing to topics
+     * On logout -> deactivates the WS connection
+     */
     useEffect(() => {
         if (!user?.isLoggedIn) return;
+
         console.log("Contacts at WebSocket subscription time:", contacts);
+        const savedToken = localStorage.getItem("token");
 
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/ws',
-            connectHeaders: {
-                login: 'guest',
-                passcode: 'guest'
-            },
+            brokerURL: `${WS_URL}/ws?token=${savedToken}`,
+            connectHeaders: {},
             forceBinaryWSFrames: true,
             appendMissingNULLonIncoming: true,
             onConnect: () => {
                 console.log('Connected to WebSocket server');
+                setStompClient(client);
 
                 subscribeIfNotExists(client,
                     "user-messages",
@@ -90,13 +99,6 @@ export const StompClientProvider = ({children}) => {
         });
 
         client.activate(); // Establish connection
-        setStompClient(client);
-
-        const localStorageUser = {userId: user.userId, emailId:user.emailId, isLoggedIn: user.isLoggedIn};
-
-        if (user.isLoggedIn) {
-            localStorage.setItem("userInfo", JSON.stringify(localStorageUser));
-        }
 
         // Cleanup WebSocket connection on logout or page refresh
         return () => {

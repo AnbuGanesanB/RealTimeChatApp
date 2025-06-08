@@ -29,7 +29,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5175", exposedHeaders = "ContactId")
 public class UserController {
 
     private final UserService userService;
@@ -47,12 +46,11 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/signin")
+    @PostMapping("/login")
     @ResponseBody
-    public LoggedUserInfoDto login(@RequestBody LoginDto loginDto){
-        User user = userService.validate(loginDto.getEmailId(), loginDto.getPassword());
-        user = userService.changeOnlineStatus(user,OnlineStatus.ONLINE);
-        return userDetailMapper.getLoggedUserInfo(user);
+    public ResponseEntity<Map<String, String>> loginjwt(@RequestBody LoginDto loginDto){
+        ResponseEntity<Map<String, String>> responseEntity = userService.authenticateUser(loginDto);
+        return responseEntity;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -100,13 +98,13 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/refresh")
+    @GetMapping("/fetchUser")
     @ResponseBody
-    public LoggedUserInfoDto refresh(@RequestBody Map<String, Integer> loggedUserDetails){
-        int loggedUserId = loggedUserDetails.get("loggedUserId");
-        User loggedUser = userService.getUserById(loggedUserId);
+    public LoggedUserInfoDto fetchCurrentUser(){
+        User loggedUser = userService.getCurrentUser();
+        System.out.println("From Fetch User:");
+        System.out.println(loggedUser.getUsername());
         return userDetailMapper.getLoggedUserInfo(loggedUser);
     }
-
 
 }

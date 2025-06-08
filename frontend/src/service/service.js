@@ -1,12 +1,18 @@
+import {BASE_URL} from '../config';
+
+const getToken = () => {
+    return localStorage.getItem("token");
+};
+
 export const sendNewContactRequest = async (senderId, contactId) => {
     console.log("sendNewContactRequest senderId : " + senderId);
     console.log("sendNewContactRequest contactId : " + contactId);
 
     const newContactMeta = {senderId: senderId, contactPersonId: contactId};
     try {
-        const response = await fetch("http://localhost:8080/addcontact", {
+        const response = await fetch(`${BASE_URL}/addcontact`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify(newContactMeta),
         });
 
@@ -22,9 +28,9 @@ export const sendNewContactRequest = async (senderId, contactId) => {
 
 export const sendNewGroupRequest = async (addGroupData) => {
     try {
-        const response = await fetch("http://localhost:8080/creategroup", {
+        const response = await fetch(`${BASE_URL}/creategroup`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify(addGroupData),
         });
 
@@ -40,9 +46,9 @@ export const sendNewGroupRequest = async (addGroupData) => {
 
 export const sendEditGroupRequest = async (editGroupData) => {
     try {
-        const response = await fetch("http://localhost:8080/editgroup", {
+        const response = await fetch(`${BASE_URL}/editgroup`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify(editGroupData),
         });
 
@@ -58,9 +64,9 @@ export const sendEditGroupRequest = async (editGroupData) => {
 
 export const sendEditContactRequest = async (editContactData) => {
     try {
-        const response = await fetch("http://localhost:8080/editcontact", {
+        const response = await fetch(`${BASE_URL}/editcontact`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify(editContactData),
         });
 
@@ -74,27 +80,11 @@ export const sendEditContactRequest = async (editContactData) => {
     }
 }
 
-/*export const UploadFileRequest = async (formData) => {
-    try {
-        const response = await fetch("http://localhost:8080/uploadFiles", {
-            method: "POST",
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error("File Upload failed.");
-        }
-
-    } catch (error) {
-        console.error("Error:", error.message);
-        alert("File Upload - failed! Please try again.");
-    }
-}*/
-
 export const UploadMessageRequest = async (formData) => {
     try {
-        const response = await fetch("http://localhost:8080/uploadMessage", {
+        const response = await fetch(`${BASE_URL}/uploadMessage`, {
             method: "POST",
+            headers: { Authorization: `Bearer ${getToken()}` },
             body: formData
         });
 
@@ -110,10 +100,10 @@ export const UploadMessageRequest = async (formData) => {
 
 export const fetchMessages = async (oldContactId, recipientId) => {
     try {
-        const response = await fetch("http://localhost:8080/chats", {
+        const response = await fetch(`${BASE_URL}/chats`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json", Authorization: `Bearer ${getToken()}`
             },
             body: JSON.stringify({
                 oldContactId: oldContactId,
@@ -136,9 +126,9 @@ export const fetchMessages = async (oldContactId, recipientId) => {
 
 export const notifyProfileUpdate = async (userId) => {
     try {
-        const response = await fetch("http://localhost:8080/profileupdate", {
+        const response = await fetch(`${BASE_URL}/profileupdate`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify({ loginUserId: userId }),
         });
 
@@ -152,9 +142,9 @@ export const notifyProfileUpdate = async (userId) => {
 
 export const signout = async (userId) => {
     try {
-        const response = await fetch("http://localhost:8080/signout", {
+        const response = await fetch(`${BASE_URL}/signout`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify({ loginUserId: userId }),
         });
 
@@ -168,8 +158,9 @@ export const signout = async (userId) => {
 
 export const sendEditDisplayProfileRequest = async (displayProfileData) => {
     try {
-        const response = await fetch("http://localhost:8080/editDisplayProfile", {
+        const response = await fetch(`${BASE_URL}/editDisplayProfile`, {
             method: "POST",
+            headers: { Authorization: `Bearer ${getToken()}` },
             body: displayProfileData
         });
 
@@ -184,19 +175,20 @@ export const sendEditDisplayProfileRequest = async (displayProfileData) => {
     }
 }
 
-export const refresh = async (userId) => {
+export const fetchUser = async () => {
     try {
-        const response = await fetch("http://localhost:8080/refresh", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ loggedUserId: userId }),
+        const response = await fetch(`${BASE_URL}/fetchUser`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }
+            //body: JSON.stringify({ loggedUserId: userId }),
         });
 
         if (!response.ok) {
             throw new Error("Refresh failed!");
         }
 
-        return response;
+        return await response.json();
+
     } catch (error) {
         console.error("Refresh error:", error.message);
     }
@@ -204,9 +196,9 @@ export const refresh = async (userId) => {
 
 export const statusChange = async (userId,statusIndex) => {
     try {
-        const response = await fetch("http://localhost:8080/status", {
+        const response = await fetch(`${BASE_URL}/status`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify({ loggedUserId: userId, statusIndex: statusIndex }),
         });
 

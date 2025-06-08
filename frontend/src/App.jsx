@@ -1,6 +1,4 @@
 import ChatPage from "./pages/ChatPage.jsx";
-import {SenderRecipientProvider} from "./context/SenderRecipientContext.jsx";
-import {SenderProvider} from "./context/SenderContext.jsx";
 import {RecipientProvider} from "./context/RecipientContext.jsx";
 import {UserProvider} from "./context/UserContext.jsx";
 import {SelectedContactProvider} from "./context/SelectedContactContext.jsx";
@@ -13,22 +11,20 @@ function App() {
 
   return (
       <UserProvider>
-          <SenderProvider>
-              <ContactsProvider>
-                  <SelectedContactProvider>
-                      <RecipientProvider>
-                          <StompClientProvider>
-                              <main className="main-content">
-                                  <Routes>
-                                      <Route path="/login" element={<LoginPage />} />
-                                      <Route path="/home" element={<ChatPage />} />
-                                  </Routes>
-                              </main>
-                          </StompClientProvider>
-                      </RecipientProvider>
-                  </SelectedContactProvider>
-              </ContactsProvider>
-          </SenderProvider>
+          <ContactsProvider>
+              <SelectedContactProvider>
+                  <RecipientProvider>
+                      <StompClientProvider>
+                          <main className="main-content">
+                              <Routes>
+                                  <Route path="/login" element={<LoginPage />} />
+                                  <Route path="/home" element={<ChatPage />} />
+                              </Routes>
+                          </main>
+                      </StompClientProvider>
+                  </RecipientProvider>
+              </SelectedContactProvider>
+          </ContactsProvider>
       </UserProvider>
   )
 }

@@ -19,7 +19,8 @@ function NavbarSubmenuComp(){
             await signout(user.userId);
             await notifyProfileUpdate(user.userId);
 
-            localStorage.removeItem('user');
+            console.log("Sign Out");
+            localStorage.removeItem('token');
             setRecipientId(0);
             setSelectedContactDetails(() => resetContact);
             setUser(resetUser);

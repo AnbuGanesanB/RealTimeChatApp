@@ -7,7 +7,8 @@ function SignOutComponent(){
     const navigate = useNavigate();
 
     const handleSignOut = () => {
-        localStorage.removeItem('user');
+        console.log("Sign Out");
+        localStorage.removeItem('token');
         setRecipientId(0);
         navigate("/login");
     }

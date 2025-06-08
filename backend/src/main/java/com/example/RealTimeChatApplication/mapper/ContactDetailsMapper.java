@@ -19,7 +19,7 @@ public class ContactDetailsMapper {
         ContactDetailsDto contactDetailsDto = new ContactDetailsDto();
 
         contactDetailsDto.setId(contact.getId());
-        contactDetailsDto.setOwner(contact.getOwner().getUserName());
+        contactDetailsDto.setOwner(contact.getOwner().getUsername());
         contactDetailsDto.setOwnerId(contact.getOwner().getId());
 
         contactDetailsDto.setNickName(contact.getNickName());
@@ -32,7 +32,7 @@ public class ContactDetailsMapper {
             // ------- USER
             User contactPerson = contact.getContactPerson();
 
-            contactDetailsDto.setContactPersonOrGroupName(contactPerson.getUserName());
+            contactDetailsDto.setContactPersonOrGroupName(contactPerson.getUsername());
             contactDetailsDto.setContactPersonOrGroupId(contactPerson.getId());
             contactDetailsDto.setGroupMemberDetails(null);
 

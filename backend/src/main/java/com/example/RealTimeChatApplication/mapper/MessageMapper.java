@@ -16,14 +16,14 @@ public class MessageMapper {
 
         outMessageDto.setId(message.getId());
         outMessageDto.setContent(message.getContent());
-        outMessageDto.setSender(message.getSender().getUserName());
+        outMessageDto.setSender(message.getSender().getUsername());
         outMessageDto.setSenderId(message.getSender().getId());
         outMessageDto.setMessageType(message.getMessageType().name());
         outMessageDto.setTimestamp(message.getTimestamp());
 
         if(message.getIndRecipient() != null){                  // If Ind-Recipient is true - GrpRecipient is null and Vice-versa
 
-            outMessageDto.setIndRecipient(message.getIndRecipient().getUserName());
+            outMessageDto.setIndRecipient(message.getIndRecipient().getUsername());
             outMessageDto.setIndRecipientId(message.getIndRecipient().getId());
 
             outMessageDto.setGrpRecipient("");
