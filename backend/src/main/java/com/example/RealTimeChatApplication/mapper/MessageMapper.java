@@ -5,11 +5,15 @@ import com.example.RealTimeChatApplication.model.message.OutMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class MessageMapper {
 
     private final OutFileMapper outFileMapper;
+    private final UserDetailMapper userDetailMapper;
 
     public OutMessageDto processOutMessage(Message message){
         OutMessageDto outMessageDto = new OutMessageDto();
@@ -40,6 +44,15 @@ public class MessageMapper {
                 message.isContainsFile()
                         ? message.getSharedFiles().stream().map(outFileMapper::getFileDetails).toList()
                         : null);
+
+        switch (message.getMessageType()) {
+            case GROUP_MEMBER_REMOVED, GROUP_MEMBER_ADD, GROUP_CREATION -> {
+                outMessageDto.setLinkedUsers(message.getLinkedUsers().stream().map(userDetailMapper::getUserDetails).collect(Collectors.toList()));
+            }
+            default -> {
+                outMessageDto.setLinkedUsers(null);
+            }
+        }
         return outMessageDto;
     }
 }

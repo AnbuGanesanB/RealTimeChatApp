@@ -32,7 +32,7 @@ function IndividualContact({contact, setSelectedContactIds, selectedContactIds})
                     checked={selectedContactIds.includes(contact.contactPersonOrGroupId) || contact.contactPersonOrGroupId === user.userId}
                 />
                 <label className="form-check-label" htmlFor={`contact-${contact.id}`}>
-                    {contact.nickName}
+                    {contact.contactPersonOrGroupName}
                 </label>
             </div>
         </>
@@ -58,7 +58,11 @@ function AddGroupModal({onClose}) {
         selectedContactIds.forEach(contactId => {
             console.log(contactId + " is selected")
         });
-        const addGroupData = {name: groupName, members: selectedContactIds};
+        const addGroupData = {
+            creatorId: user.userId,
+            name: groupName,
+            members: selectedContactIds,
+        };
         await sendNewGroupRequest(addGroupData);
 
         modalHide("addGroupModal");

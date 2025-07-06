@@ -1,14 +1,30 @@
-.container {
+.textMessagecontainer {
     display: flex;
     flex: 1;
     /*min-width: 30%;*/
     max-width: 100%;
     max-height: fit-content;
     padding: 10px;
-    margin: 20px;
+    margin: 10px;
     gap: 8px;
     flex-wrap: nowrap;
     position: relative;
+}
+
+.updateMessagecontainer {
+    display: flex;
+    flex: 1;
+    /*min-width: 30%;*/
+    max-width: 100%;
+    max-height: fit-content;
+    padding: 10px;
+    margin-left: 60px;
+    margin-right: 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    position: relative;
+    align-items: center;
+    //justify-content: center;
 }
 
 .messageSelf {
@@ -67,7 +83,7 @@
 }
 
 .fileDownload {
-    color: #dd0f0f;
+    color: #262c2c;
     padding: 10px;
     align-self: flex-start;
     font-size: 15px;

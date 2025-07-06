@@ -28,7 +28,6 @@ public class MessageController {
 
     private final MessageService messageService;
     private final ContactService contactService;
-    private final UserService userService;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/uploadMessage")
@@ -36,7 +35,7 @@ public class MessageController {
                             @RequestParam("contactId") Integer contactId,
                             @RequestParam("content") String content) {
         messageService.processIncomingMessage(contactId, content, files);
-        messageService.notifyRecipientsAboutMessage(contactId);
+        messageService.sendUpdatedContactToRecipients(contactId);
 
     }
 

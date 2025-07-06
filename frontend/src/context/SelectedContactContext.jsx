@@ -15,6 +15,7 @@ export const SelectedContactProvider = ({children}) => {
         ownerId: 0,
         type: "",
         groupMemberDetails: null,
+        removedMemberIds:null,
         unreadMessages: 0};
 
     const [selectedContactDetails, setSelectedContactDetails] = useState(resetContact);

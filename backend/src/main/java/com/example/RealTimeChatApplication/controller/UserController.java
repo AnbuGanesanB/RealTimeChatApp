@@ -33,11 +33,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserDetailMapper userDetailMapper;
-    private final MessageService messageService;
-    private final GroupService groupService;
-
-    private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ContactDetailsMapper contactDetailsMapper;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")

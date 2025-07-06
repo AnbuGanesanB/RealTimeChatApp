@@ -24,11 +24,15 @@ export function useContactSelection() {
             ownerId: contact.ownerId,
             type: contact.type,
             groupMemberDetails: contact.groupMemberDetails,
+            removedMemberIds: contact.removedMemberIds,
             aboutMe: contact.aboutMe,
             initials: contact.initials,
             dpPath: contact.dpPath,
             dpAvailable: contact.dpAvailable,
             onlineStatus: contact.onlineStatus,
+            lastMessageFromUser: contact.lastMessageFromUser,
+            lastMessageContent: contact.lastMessageContent,
+            lastMessageSenderId: contact.lastMessageSenderId,
         };
 
         console.log("Setting contact details:", newContactDetails);

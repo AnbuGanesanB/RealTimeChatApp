@@ -19,10 +19,9 @@ export const StompClientProvider = ({children}) => {
     const [receivedMessage, setReceivedMessage] = useState("");
     const [updatedContact, setUpdatedContact] = useState(null);
     const [newReceivedContact, setNewReceivedContact] = useState(null);
-    const [groupUpdateType, setGroupUpdateType] = useState("");
-    const [groupUpdate, setGroupUpdate] = useState(null);
+    const [isStompConnected, setIsStompConnected] = useState(false);
 
-    const subscribedTopicsRef = useRef(new Set());
+    const subscribedTopicsRef = useRef(new Map());
 
     const subscribeIfNotExists = (client, key, topic, callback) => {
         if (!client || !client.connected) {
@@ -31,9 +30,19 @@ export const StompClientProvider = ({children}) => {
         }
         if (!subscribedTopicsRef.current.has(key)) {
             console.log("Subscribing to topic: ",topic);
-            client.subscribe(topic, callback);
-            subscribedTopicsRef.current.add(key);
+            const subscription = client.subscribe(topic, callback);
+            subscribedTopicsRef.current.set(key,subscription);
         }
+    };
+
+    const unsubscribeIfSubscribed = (client, key, topic) => {
+        if (subscribedTopicsRef.current.has(key)) {
+            console.log("Un-Subscribing from topic: ",topic);
+            const subscription = subscribedTopicsRef.current.get(key);
+            subscription.unsubscribe();
+            subscribedTopicsRef.current.delete(key);
+        }
+        console.log("Current subscriptions: ",subscribedTopicsRef.current);
     };
 
 
@@ -54,7 +63,9 @@ export const StompClientProvider = ({children}) => {
             appendMissingNULLonIncoming: true,
             onConnect: () => {
                 console.log('Connected to WebSocket server');
+                subscribedTopicsRef.current.clear();
                 setStompClient(client);
+                setIsStompConnected(true);
 
                 subscribeIfNotExists(client,
                     "user-messages",
@@ -88,13 +99,18 @@ export const StompClientProvider = ({children}) => {
                         setUpdatedContact(newUpdatedContact);
                     }
                 );
-
             },
             onStompError: (error) => {
+                setIsStompConnected(false);
                 console.error('STOMP Error:', error);
             },
             onDisconnect: () => {
                 console.log('Disconnected from WebSocket server');
+            },
+            onWebSocketClose: () => {
+                subscribedTopicsRef.current.clear();
+                setIsStompConnected(false);
+                console.log('WebSocket closed');
             }
         });
 
@@ -111,13 +127,12 @@ export const StompClientProvider = ({children}) => {
     }, [user.isLoggedIn]);
 
     useEffect(() => {
-        console.log("In Group-useEffect block 1..");
         console.log(`StompClient now is: ${stompClient}`);
-        if (!stompClient || !user?.isLoggedIn || contacts.length === 0) return;
-        console.log("In Group-useEffect block 2..");
+        if (!stompClient || !isStompConnected || !stompClient.connected) return;
 
         contacts
             .filter((contact) => contact.type === "GROUP")
+            .filter((contact) => !contact.removedMemberIds.includes(user.userId))
             .forEach((contact) => {
                 const groupId = contact.contactPersonOrGroupId;
 
@@ -130,40 +145,26 @@ export const StompClientProvider = ({children}) => {
                         setReceivedMessage(newMessage);
                     }
                 );
-
-                subscribeIfNotExists(stompClient,
-                    `group-${groupId}-updates`,
-                    `/group/${groupId}/queue/updates`,
-                    (groupUpdateMessage) => {
-                        const groupUpdate = JSON.parse(groupUpdateMessage.body);
-                        console.log(`Update came for Group:`, groupUpdate);
-                        setGroupUpdate(groupUpdate);
-                        setGroupUpdateType(groupUpdate.type);
-                    }
-                );
             });
-    }, [contacts, stompClient, user?.isLoggedIn]);
 
-    useEffect(() => {
-        console.log("Entering IF 1");
-        if (!groupUpdate || !groupUpdateType) return;
-        if(groupUpdateType==="GROUP_MEMBER_ADD" || groupUpdateType==="GROUP_MEMBER_REMOVED"){
-            console.log("Entering IF 2");
-            if (groupUpdate.groupId && groupUpdate.updatedMemberDetails) {
-                updateContactMembers(groupUpdate.groupId, groupUpdate.updatedMemberDetails);
-            } else {
-                console.warn("Group update object incomplete:", groupUpdate);
-            }
-            setGroupUpdate(null);
-            setGroupUpdateType("");
-        }
-    }, [groupUpdate, groupUpdateType]);
+        contacts
+            .filter((contact) => contact.type === "GROUP")
+            .filter((contact) => contact.removedMemberIds.includes(user.userId))
+            .forEach((contact) => {
+                const groupId = contact.contactPersonOrGroupId;
+                unsubscribeIfSubscribed(stompClient,
+                    `group-${groupId}-messages`,
+                    `/group/${groupId}/queue/messages`);
+
+            });
+    },[contacts, stompClient, isStompConnected]);
 
     return (
         <StompClientContext.Provider value={{stompClient, receivedMessage, updatedContact, newReceivedContact}}>
             {children}
         </StompClientContext.Provider>
     );
+
 }
 
 export const useStompClientContext = () => useContext(StompClientContext);

@@ -3,15 +3,15 @@ package com.example.RealTimeChatApplication.service;
 import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
 import com.example.RealTimeChatApplication.mapper.MessageMapper;
 import com.example.RealTimeChatApplication.model.contact.Contact;
-import com.example.RealTimeChatApplication.model.contact.ContactDetailsDto;
 import com.example.RealTimeChatApplication.model.contact.RecipientType;
 import com.example.RealTimeChatApplication.model.group.Group;
 import com.example.RealTimeChatApplication.model.groupMembership.GroupMembership;
+import com.example.RealTimeChatApplication.model.groupMembership.MembershipStatus;
 import com.example.RealTimeChatApplication.model.message.Message;
-import com.example.RealTimeChatApplication.model.message.MessageDto;
 import com.example.RealTimeChatApplication.model.message.MessageType;
 import com.example.RealTimeChatApplication.model.message.OutMessageDto;
 import com.example.RealTimeChatApplication.model.user.User;
+import com.example.RealTimeChatApplication.repositories.GroupMembershipRepo;
 import com.example.RealTimeChatApplication.repositories.MessageRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,59 +31,32 @@ public class MessageService {
     private final ContactService contactService;
     private final MessageMapper messageMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ContactDetailsMapper contactDetailsMapper;
-    private final GroupService groupService;
+    private final UserService userService;
     private final FileService fileService;
+    private final GroupMembershipRepo groupMembershipRepo;
 
     @Transactional
     public void processIncomingMessage(int contactId, String content, List<MultipartFile> files){
-        Contact contact = contactService.getContactById(contactId);
-        Message message = processMetaAndSaveMessage(contact, content, files);
-        distributeMessage(message,contact);
+        //contactService.processContactsForIncomingMessage(contactId);
+        Message message = saveIncomingMessage(contactId, content, files);
+        contactService.processContactsForIncomingMessage(contactId,message);
+        distributeMessage(message,contactId);
     }
 
     @Transactional
-    private Message processMetaAndSaveMessage(Contact contact, String content, List<MultipartFile> files){
+    private Message saveIncomingMessage(int contactId, String content, List<MultipartFile> files){
+        Contact contact = contactService.getContactById(contactId);
+        System.out.println("In Message saving method");
         Message message = new Message();
         message.setContent(content);
         message.setTimestamp(LocalDateTime.now());
         message.setMessageType(MessageType.TEXT_MESSAGE);
+        message.setSender(contact.getOwner());                        //Contact owner is the sender of the message
 
-        User contactOwner = contact.getOwner();
-        message.setSender(contactOwner);                        //Contact owner is the sender of the message
-
-        RecipientType recipientType = contact.getType();        // based on contactId & recipient type - set recipient
-        if(recipientType == RecipientType.USER){
-
-            User contactPerson = contact.getContactPerson();
-            message.setIndRecipient(contactPerson);
-
-            if(contactOwner != contactPerson){
-                // Reverse-Contact not exists
-                if(!contactService.existsContact(contactPerson, contactOwner)) {
-
-                    // Contact-person is the owner and vice-versa - to create new reverse contact
-                    // & Contact Update - sent to real time update
-                    Contact newlySavedReverseContact = contactService.addNewUserContactManually(contactPerson, contactOwner);
-                    newlySavedReverseContact = contactService.incrementUnreadMessages(newlySavedReverseContact);
-                    contactService.sendNewContactMessageToUser(contactPerson,newlySavedReverseContact);
-                }else{
-                    // Getting Reverse contact to save unread message
-                    Contact reverseContact = contactService.getContactByOwnerAndContactPerson(contactPerson,contactOwner);
-                    contactService.incrementUnreadMessages(reverseContact);
-                }
-            }
-
-        } else if (recipientType == RecipientType.GROUP) {
-            Group contactGroup = contact.getContactGroup();
-            message.setGrpRecipient(contactGroup);
-
-            List<User> groupMembers = groupService.getActiveMembers(contactGroup);
-            for(User member: groupMembers){
-                if(member.equals(contactOwner)) continue;
-                Contact user_GroupContact = contactService.getContactByOwnerAndContactGroup(member,contactGroup);
-                contactService.incrementUnreadMessages(user_GroupContact);
-            }
+        // based on contactId & recipient type - set recipient
+        switch (contact.getType()) {
+            case USER -> message.setIndRecipient(contact.getContactPerson());
+            case GROUP -> message.setGrpRecipient(contact.getContactGroup());
         }
 
         boolean isFilesPresent = files != null;
@@ -94,12 +64,12 @@ public class MessageService {
         message = messageRepo.save(message);
 
         if(isFilesPresent) fileService.processIncomingFiles(files,message);
-        contactService.updateLastSeen(contact);
         return message;
     }
 
     @Transactional
-    private void distributeMessage(Message message, Contact contact){
+    public void distributeMessage(Message message, int contactId){
+        Contact contact = contactService.getContactById(contactId);
 
         RecipientType recipientType = contact.getType();
         OutMessageDto outMessageDto = messageMapper.processOutMessage(message);
@@ -127,25 +97,25 @@ public class MessageService {
             User secondPerson = contact.getContactPerson();
 
             if(firstPerson != secondPerson){                    // User NOT viewing self contact
-                Set<Message> firstSet = messageRepo.findBySenderAndIndRecipient(firstPerson,secondPerson);
-                Set<Message> secondSet = messageRepo.findBySenderAndIndRecipient(secondPerson, firstPerson);
+                List<Message> firstSet = messageRepo.findBySenderAndIndRecipient(firstPerson,secondPerson);
+                List<Message> secondSet = messageRepo.findBySenderAndIndRecipient(secondPerson, firstPerson);
 
                 combinedMessages.addAll(firstSet);
                 combinedMessages.addAll(secondSet);
             }else{                                              // user viewing self contact
-                Set<Message> firstSet = messageRepo.findBySenderAndIndRecipient(firstPerson,secondPerson);
+                List<Message> firstSet = messageRepo.findBySenderAndIndRecipient(firstPerson,secondPerson);
                 combinedMessages.addAll(firstSet);
             }
 
         } else if (contact.getContactGroup() != null) {
 
-            Set<GroupMembership> groupMemberships = contact.getContactGroup().getMembers();
-
-            for (GroupMembership membership : groupMemberships) {
-                User member = membership.getGroupMemberId();
-                Group group = membership.getGroupId();
-
-                combinedMessages.addAll(messageRepo.findBySenderAndGrpRecipient(member, group));
+            Group group = contact.getContactGroup();
+            GroupMembership membership = groupMembershipRepo.findByGroupMemberIdAndGroupId(firstPerson,group);
+                                                                    // Active Users get whole chat
+            if(membership.getMembershipStatus() == MembershipStatus.ACTIVE){
+                combinedMessages.addAll(messageRepo.findByGrpRecipient(group));
+            }else {                                                 // InActive Users get restricted chats
+                combinedMessages.addAll(messageRepo.findByGrpRecipientAndTimestampBefore(group, membership.getRemovedAt()));
             }
         }
 
@@ -156,6 +126,90 @@ public class MessageService {
                 .map(messageMapper::processOutMessage)
                 .sorted(Comparator.comparing(OutMessageDto::getTimestamp))
                 .collect(Collectors.toList());
+    }
+
+    public Message processGroupCreationMessage(User initiator, Group group, List<Integer> newMemberIds){
+        Set<User> addedUsers = new HashSet<>(newMemberIds.size());
+        System.out.println("List size is: "+newMemberIds.size());
+        for(int id:newMemberIds) {
+            if(id==initiator.getId()) continue;     // Not adding creator to Linked User's list
+            System.out.println("Adding "+id+" to the group");
+            addedUsers.add(userService.getUserById(id));
+        }
+        System.out.println("Added users: "+addedUsers);
+        Message message = new Message();
+        message.setMessageType(MessageType.GROUP_CREATION);
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        message.setTimestamp(LocalDateTime.now());
+        message.setContent(group.getGroupName());
+        message.setLinkedUsers(addedUsers);
+        return messageRepo.save(message);
+    }
+
+    public Message processGroupNameChangeMessage(User initiator, Group group, String newGroupName) {
+        Message message = new Message();
+        message.setMessageType(MessageType.GROUP_NAME_CHANGE);
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        message.setTimestamp(LocalDateTime.now());
+        message.setContent(newGroupName);
+        return messageRepo.save(message);
+    }
+
+    public Message processAutoGroupDpMessage(User initiator, Group group, MessageType messageType) {
+        Message message = new Message();
+        message.setMessageType(messageType);
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        message.setTimestamp(LocalDateTime.now());
+        return messageRepo.save(message);
+    }
+
+    public Message processMemberRemovalMessage(User initiator, Group group, List<Integer> userIds){
+        Set<User> removedUsers = new HashSet<>(userIds.size());
+        for(int id:userIds) {
+            removedUsers.add(userService.getUserById(id));
+        }
+        Message message = new Message();
+        message.setMessageType(MessageType.GROUP_MEMBER_REMOVED);
+        message.setTimestamp(LocalDateTime.now());
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        message.setLinkedUsers(removedUsers);
+        return messageRepo.save(message);
+    }
+
+    public Message processMemberSelfRemovalMessage(User initiator, Group group){
+        Message message = new Message();
+        message.setMessageType(MessageType.USER_LEFT_GROUP);
+        message.setTimestamp(LocalDateTime.now());
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        return messageRepo.save(message);
+    }
+
+    public Message processMemberAdditionMessage(User initiator, Group group, List<Integer> userIds) {
+        Set<User> addedUsers = new HashSet<>(userIds.size());
+        for(int id:userIds) {
+            addedUsers.add(userService.getUserById(id));
+        }
+        Message message = new Message();
+        message.setMessageType(MessageType.GROUP_MEMBER_ADD);
+        message.setSender(initiator);
+        message.setGrpRecipient(group);
+        message.setTimestamp(LocalDateTime.now());
+        message.setLinkedUsers(addedUsers);
+        return messageRepo.save(message);
+    }
+
+    /**
+     * if: Recipient is Person - Trigger updated_Reverse Contact towards Recipients
+     * message A-->B, Notify B; Update B's contact where A is Recipient
+     * if: Recipient is Group - Other than original sender, send updated Group contact for each member
+     */
+    public void sendUpdatedContactToRecipients(int contactId){
+        contactService.sendUpdatedContactToAllRecipients(contactId);
     }
 
     private void sendIndividualTextMessage(User user, OutMessageDto outMessageDto){
@@ -170,25 +224,4 @@ public class MessageService {
         simpMessagingTemplate.convertAndSend(dest,outMessageDto);
     }
 
-    /**
-     * if: Recipient is Person - Trigger updated_Reverse Contact towards Recipients
-     * message A-->B, Notify B; Update B's contact where A is Recipient
-     * if: Recipient is Group - Other than original sender, send updated Group contact for each member
-     */
-    public void notifyRecipientsAboutMessage(int contactId){
-        Contact contact = contactService.getContactById(contactId);
-        if(contact.getType()==RecipientType.USER){
-            Contact reverseContact = contactService.getContactByOwnerAndContactPerson(contact.getContactPerson(), contact.getOwner());
-            contactService.sendUpdatedContactMessageToUser(reverseContact.getOwner(),reverseContact);
-        } else if (contact.getType()==RecipientType.GROUP) {
-            Group contactGroup = contact.getContactGroup();
-            List<User> groupMembers = groupService.getActiveMembers(contactGroup);
-            for(User member: groupMembers){
-                Contact user_GroupContact = contactService.getContactByOwnerAndContactGroup(member,contactGroup);
-                if(user_GroupContact.equals(contact)) continue;
-                contactService.sendUpdatedContactMessageToUser(member,user_GroupContact);
-            }
-        }
-
-    }
 }

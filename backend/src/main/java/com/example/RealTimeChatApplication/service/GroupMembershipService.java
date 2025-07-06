@@ -12,7 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +38,14 @@ public class GroupMembershipService {
         groupMembership.setGroupMemberId(newMember);
         newMember.getGroupMemberships().add(groupMembership);
 
-        groupMembershipRepo.save(groupMembership);
+        groupMembership = groupMembershipRepo.save(groupMembership);
         userRepo.save(newMember);
         groupRepo.save(group);
         return groupMembership;
+    }
+
+    public GroupMembership findGroupMembership(Group group, User user){
+        return groupMembershipRepo.findByGroupIdAndGroupMemberId(group,user)
+                .orElseThrow(() -> new NoSuchElementException("No MemberShip found"));
     }
 }

@@ -32,7 +32,6 @@ export const ContactsProvider = ({children}) => {
 
                     method: "POST",
                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    //body: JSON.stringify({ loginUserId: 52 }),
                     body: JSON.stringify({ loginUserId: user.userId }),
                 });
 

@@ -13,9 +13,13 @@ import EditUserContactModal from "../modals/EditUserContactModal.jsx";
 import EditSelfModal from "../modals/EditSelfModal.jsx";
 import { useSideEffects } from "./SideEffects.jsx"
 import {useState} from "react";
+import {useUserContext} from "../context/UserContext.jsx";
+import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 
 function ChatPage(){
     const {recipientId} = useRecipientContext();
+    const {user} = useUserContext();
+    const {selectedContactDetails} = useSelectedContactContext();
 
     const [showEditSelfModal, setShowEditSelfModal] = useState(false);
     const [showAddGroupModal, setShowAddGroupModal] = useState(false);
@@ -31,7 +35,11 @@ function ChatPage(){
             </div>
             <div className="right-layout">
                 <NavBar onAddGroup={() => setShowAddGroupModal(true)}
-                        onEditGroupContact={() => setShowEditGroupContactModal(true)}
+                        onEditGroupContact={() => {
+                            console.log("Trying Edit Group:",selectedContactDetails);
+                            if (!(selectedContactDetails?.removedMemberIds?.includes(user.userId))) {
+                                setShowEditGroupContactModal(true);
+                            }}}
                         onEditUserContact={() => setShowEditUserContactModal(true)}/>
                 {recipientId ? <ChatDisplay /> : <WelcomeDisplayComp />}
                 <MessageUtil />

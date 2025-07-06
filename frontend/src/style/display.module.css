@@ -1,9 +1,10 @@
 .welcomeContainer {
     background-color: #4b4c4b;
     width: inherit;
-    /*top:50px;
-    bottom: 70px;*/
     flex: 1;
+    /*background-image: url("Welcome_2.jpg");
+    background-size: cover;*/
+    background: linear-gradient(to bottom right, #bb12f3, #6fb1fc);
 }
 
 .chatContainer {
@@ -17,6 +18,10 @@
     background-color: #b392e4;
     padding: 10px;
     overflow-y: auto;
+}
+
+.updateMessage {
+    /*align-self: flex-start;*/
 }
 
 .messageSelf {

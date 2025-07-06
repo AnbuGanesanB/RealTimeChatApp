@@ -2,9 +2,11 @@ import {createPortal} from "react-dom";
 import {useEffect, useState} from "react";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import {useContactsContext} from "../context/ContactsContext.jsx";
-import {sendEditGroupRequest,sendEditContactRequest} from "../service/service.js";
+import {editGroupContact, editUserContact} from "../service/service.js";
 import {useRecipientContext} from "../context/RecipientContext.jsx";
 import {modalHide, useBootstrapModalClose} from "../service/utilities.js";
+import styles from '../style/EditSelfModal.module.css';
+import {useUserContext} from "../context/UserContext.jsx";
 
 
 function NewMemberComp({contact, setNewMemberIds}){
@@ -72,46 +74,54 @@ function EditGroupContactModal({onClose}){
     const {recipientId} = useRecipientContext();
     const {contacts} = useContactsContext();
     const {selectedContactDetails} = useSelectedContactContext();
+    const {user} = useUserContext();
 
     const [newGroupName, setNewGroupName] = useState("");       //  for New-Group name
-    const [oldNickName, setOldNickName] = useState("");
     const [newNickName, setNewNickName] = useState("");
     const [oldMembers, setOldMembers] = useState([]);           // UserDetailDTO
     const [oldMemberIds, setOldMemberIds] = useState([]);       // User-ID's    (old members)
     const [newMemberIds, setNewMemberIds] = useState([]);       // User-ID's    (new members)
 
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(selectedContactDetails.dpPath);
+    const oldDpPath = selectedContactDetails.dpPath;
+    const removedMemberIds = selectedContactDetails.removedMemberIds;
+
     useBootstrapModalClose("editGroupModal",onClose);
 
-    const handleEditGroupDetails = (e)=>{
+    const handleEditGroupDetails = async (e) => {
         e.preventDefault();
-        console.log("Edit Triggered:--")
         newMemberIds.forEach(memberId => {console.log(memberId," is selected")});
+
+        const isDpChanged = oldDpPath !== previewUrl;
+
+        const editedGroupContactData = new FormData();
+
+        editedGroupContactData.append("contactId",selectedContactDetails.id);
+        editedGroupContactData.append("newGroupName",newGroupName);
+        editedGroupContactData.append("newNickName",newNickName);
+        newMemberIds.forEach(memberId => {editedGroupContactData.append("newMemberIds",memberId)});
+        editedGroupContactData.append("profilePic", selectedFile);
+        editedGroupContactData.append("isDpChanged",isDpChanged);
+
+        await editGroupContact(editedGroupContactData);
+
         modalHide("editGroupModal");
     }
 
     useEffect(() => {
 
         setNewGroupName(selectedContactDetails.contactPersonOrGroupName);
-
-        setOldNickName(selectedContactDetails.nickName);
         setNewNickName(selectedContactDetails.nickName);
 
-        setOldMembers(selectedContactDetails.groupMemberDetails ? selectedContactDetails.groupMemberDetails : []);
-        //setNewMembers(selectedContactDetails.groupMemberDetails);
+        const filteredMembers = selectedContactDetails.groupMemberDetails
+            ? selectedContactDetails.groupMemberDetails
+                .filter((member) => !removedMemberIds.includes(member.id))
+            : [];
 
-        setOldMemberIds(
-            selectedContactDetails.groupMemberDetails
-                ? selectedContactDetails.groupMemberDetails.map(member => member.id)
-                : []
-        );
-
-        setNewMemberIds(
-            selectedContactDetails.groupMemberDetails
-                ? selectedContactDetails.groupMemberDetails.map(member => member.id)
-                : []
-        )
-
-        console.log("Try",oldNickName);
+        setOldMembers(filteredMembers);
+        setOldMemberIds(filteredMembers.map(member => member.id));
+        setNewMemberIds(filteredMembers.map(member => member.id));
 
     }, [recipientId]);
 
@@ -121,6 +131,23 @@ function EditGroupContactModal({onClose}){
 
     const handleNewGroupName = (e) => {
         setNewGroupName(e.target.value);
+    }
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+        const preview = URL.createObjectURL(file);
+        console.log("preview URL:",preview);
+        setPreviewUrl(preview);
+    };
+
+    const handleFileRemove = (event) => {
+        setSelectedFile(null);
+        setPreviewUrl(null);
+    }
+
+    const handleEditImage = (event) => {
+        document.getElementById('dpImageInput').click();
     }
 
     return createPortal(
@@ -151,6 +178,40 @@ function EditGroupContactModal({onClose}){
                                                         name="groupName"
                                                         onChange={(e)=>handleNewGroupName(e)} required
                                                         value={newGroupName} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="accordion-item">
+                                        <h2 className="accordion-header">
+                                            <button className="accordion-button" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                                    aria-controls="panelsStayOpen-collapseOne">
+                                                Display Picture
+                                            </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
+                                            <div className="accordion-body">
+                                                <div className={styles.imageContainer}>
+
+                                                    {previewUrl && !selectedFile && (
+                                                        <img className={styles.image} src={`http://localhost:8080/dp/${previewUrl}`} alt="Profile Pic Preview"/>)}
+                                                    {previewUrl && selectedFile && (
+                                                        <img className={styles.image} src={`${previewUrl}`} alt="Profile Pic Preview"/>)}
+                                                    {!previewUrl && !selectedFile && (
+                                                        <i className={`bi bi-instagram ${styles.noImage}`}/>)}
+
+                                                    <button className={styles.imageRemove} type="button"
+                                                            onClick={handleFileRemove}>X
+                                                    </button>
+                                                    <div className="upload-wrapper">
+                                                        <button type="button" id="editIconBtn" className={styles.imageEdit} onClick={handleEditImage}>
+                                                            <i className="bi bi-pencil"/>
+                                                        </button>
+
+                                                        <input type="file" id="dpImageInput" className={styles.hiddenFileInput}
+                                                               onChange={handleFileChange} accept="image/*"/>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

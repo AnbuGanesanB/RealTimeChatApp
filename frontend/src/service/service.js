@@ -8,12 +8,14 @@ export const sendNewContactRequest = async (senderId, contactId) => {
     console.log("sendNewContactRequest senderId : " + senderId);
     console.log("sendNewContactRequest contactId : " + contactId);
 
-    const newContactMeta = {senderId: senderId, contactPersonId: contactId};
     try {
         const response = await fetch(`${BASE_URL}/addcontact`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-            body: JSON.stringify(newContactMeta),
+            body: JSON.stringify({
+                senderId: senderId,
+                contactPersonId: contactId
+            }),
         });
 
         if (!response.ok) {
@@ -28,7 +30,7 @@ export const sendNewContactRequest = async (senderId, contactId) => {
 
 export const sendNewGroupRequest = async (addGroupData) => {
     try {
-        const response = await fetch(`${BASE_URL}/creategroup`, {
+        const response = await fetch(`${BASE_URL}/createGroup`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
             body: JSON.stringify(addGroupData),
@@ -43,6 +45,7 @@ export const sendNewGroupRequest = async (addGroupData) => {
         alert("Group Creation - failed! Please try again.");
     }
 }
+/*
 
 export const sendEditGroupRequest = async (editGroupData) => {
     try {
@@ -79,6 +82,7 @@ export const sendEditContactRequest = async (editContactData) => {
         alert("Contact Modification - failed! Please try again.");
     }
 }
+*/
 
 export const UploadMessageRequest = async (formData) => {
     try {
@@ -98,6 +102,10 @@ export const UploadMessageRequest = async (formData) => {
     }
 }
 
+/**
+ * OldContactId - To trigger an Updated last contact details through WS
+ * NewContactId - Fetches the chats on the contact(me and user/group)
+ */
 export const fetchMessages = async (oldContactId, recipientId) => {
     try {
         const response = await fetch(`${BASE_URL}/chats`, {
@@ -124,6 +132,54 @@ export const fetchMessages = async (oldContactId, recipientId) => {
     }
 };
 
+/**
+ * Edit Contact name(nickname) & fires an Updated contact by WS
+ */
+export const editUserContact = async (editedUserContactData) => {
+    try {
+        const response = await fetch(`${BASE_URL}/editUser`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            },
+            body: editedUserContactData
+        });
+
+        if (!response.ok) {
+            throw new Error("Edit Nickname failed!");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+};
+
+/**
+ * Edit Group Contact
+ * If (name(nickname)) changes, fires an Updated contact by WS for Me.
+ * If common details (Grp name, DP, Members(add/remove)) changes,
+ * fires an updated contact for all applicable members.
+ */
+export const editGroupContact = async (editedGroupContactData) => {
+    try {
+        const response = await fetch(`${BASE_URL}/editGroup`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            },
+            body: editedGroupContactData
+        });
+
+        if (!response.ok) {
+            throw new Error("Edit Group failed!");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+};
+
+/**
+ * Notify about My update to Other users
+ */
 export const notifyProfileUpdate = async (userId) => {
     try {
         const response = await fetch(`${BASE_URL}/profileupdate`, {
@@ -156,6 +212,9 @@ export const signout = async (userId) => {
     }
 };
 
+/**
+ * Edit My profile details (Profile Pic, About Me, My Name)
+ */
 export const sendEditDisplayProfileRequest = async (displayProfileData) => {
     try {
         const response = await fetch(`${BASE_URL}/editDisplayProfile`, {
@@ -175,6 +234,9 @@ export const sendEditDisplayProfileRequest = async (displayProfileData) => {
     }
 }
 
+/**
+ * Fetches My Details into browser
+ */
 export const fetchUser = async () => {
     try {
         const response = await fetch(`${BASE_URL}/fetchUser`, {
@@ -194,6 +256,9 @@ export const fetchUser = async () => {
     }
 };
 
+/**
+ * Change my Online Status(Online/Offline/..)
+ */
 export const statusChange = async (userId,statusIndex) => {
     try {
         const response = await fetch(`${BASE_URL}/status`, {

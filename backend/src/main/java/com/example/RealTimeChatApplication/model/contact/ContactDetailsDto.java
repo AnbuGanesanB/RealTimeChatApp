@@ -27,16 +27,15 @@ public class ContactDetailsDto {
     private String type;
     private int unreadMessages;
     private List<UserDetailsDto> groupMemberDetails;    // valid only for group - else null
-
-    private String dpPath;              //both - unique
-    private boolean isDpAvailable;      //both - unique
+    private List<Integer> removedMemberIds;
+    private String dpPath;
+    private boolean isDpAvailable;
     private String aboutMe;
     private String onlineStatus;
-    private String initials;            //both - unique
-    /*
-    private Object onlineStatus;
-    private Object profilePicture;
-    private boolean isOwnerBlocked;
-    private Object status;
-    */
+    private String initials;
+
+    private String lastMessageFromUser;
+    private String lastMessageContent;
+    private int lastMessageSenderId;
+
 }
