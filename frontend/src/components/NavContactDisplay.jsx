@@ -30,7 +30,7 @@ function NavContactDisplay() {
                             {selectedContactDetails.contactPersonOrGroupName}
                         </div>)
                         : (<div className={styles.contactLine1}>
-                            {`${selectedContactDetails.contactPersonOrGroupName} (${selectedContactDetails.nickName})`}
+                            {`${selectedContactDetails.nickName} (${selectedContactDetails.contactPersonOrGroupName})`}
                         </div>)}
 
                     {selectedContactDetails.type === "USER"

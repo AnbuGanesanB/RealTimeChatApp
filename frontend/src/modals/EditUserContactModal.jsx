@@ -2,7 +2,7 @@ import {createPortal} from "react-dom";
 import {useEffect, useState} from "react";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import {useContactsContext} from "../context/ContactsContext.jsx";
-import {sendEditGroupRequest,sendEditContactRequest} from "../service/service.js";
+import {editUserContact} from "../service/service.js";
 import {useRecipientContext} from "../context/RecipientContext.jsx";
 import {useBootstrapModalClose,modalHide} from "../service/utilities.js";
 import {Modal} from "bootstrap";
@@ -13,23 +13,24 @@ function EditUserContactModal({onClose}){
     const {contacts, setContacts} = useContactsContext();
     const {selectedContactDetails} = useSelectedContactContext();
 
-    //const oldNickName = selectedContact.nickName;
-    const[nickName, setNickName] = useState("");
+    const[nickName, setNickName] = useState(selectedContactDetails.nickName);
 
     useBootstrapModalClose("editUserModal",onClose);
 
-    const handleEditUserDetails = (e)=>{
+    const handleEditUserDetails = async (e)=>{
         e.preventDefault();
+
+        const editedUserContactData = new FormData();
+        editedUserContactData.append("contactId",selectedContactDetails.id);
+        editedUserContactData.append("nickName",nickName);
+        await editUserContact(editedUserContactData);
+
         modalHide("editUserModal");
     }
 
     function handleNewNickName(e) {
-        return undefined;
+        setNickName(e.target.value);
     }
-
-    useEffect(() => {
-        setNickName(selectedContactDetails.nickName);
-    }, [recipientId]);
 
     return createPortal(
         <>

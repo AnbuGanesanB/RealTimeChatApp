@@ -2,6 +2,15 @@ html {
     margin: 0;
 }
 
+.login-screen {
+    background-image: url("W4.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 100vh;
+}
+
 .login-page-card {
     padding: 10px;
     position: fixed;
@@ -11,4 +20,5 @@ html {
     right: 150px;
     border: 3px solid #cc3263;
     border-radius: 15px;
+    background-color: #e9efef;
 }

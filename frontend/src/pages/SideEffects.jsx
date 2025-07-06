@@ -62,11 +62,15 @@ export function useSideEffects() {
                 ownerId: updatedContact.ownerId,
                 type: updatedContact.type,
                 groupMemberDetails: updatedContact.groupMemberDetails,
+                removedMemberIds: updatedContact.removedMemberIds,
                 aboutMe: updatedContact.aboutMe,
                 initials: updatedContact.initials,
                 dpPath: updatedContact.dpPath,
                 dpAvailable: updatedContact.dpAvailable,
                 onlineStatus: updatedContact.onlineStatus,
+                lastMessageFromUser: updatedContact.lastMessageFromUser,
+                lastMessageContent: updatedContact.lastMessageContent,
+                lastMessageSenderId: updatedContact.lastMessageSenderId,
             };
 
             console.log("Setting updated contact details for Selected contact:", updatedContactDetails);

@@ -16,7 +16,7 @@ import java.util.Objects;
 public class SharedFile {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String originalFileName;
     private String uniqueFileName;

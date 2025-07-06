@@ -88,6 +88,7 @@ public class UserService {
         user.setUserName(registerDto.getUserName());
         user.setType(RecipientType.USER);
         user.setOnlineStatus(OnlineStatus.OFFLINE);
+        user.setAboutMe("Hello! Let's Talk...");
         user = userRepo.save(user);
         contactService.addNewUserContactManually(user,user);        // Creating self-contact for every new user
     }

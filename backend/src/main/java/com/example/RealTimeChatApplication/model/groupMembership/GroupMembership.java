@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,6 +30,7 @@ public class GroupMembership {
     @JoinColumn(name = "groupId")
     private Group groupId;
 
+    @Column(columnDefinition = "DATETIME(6)")
     private LocalDateTime joinedAt;
 
     @Enumerated(EnumType.STRING)
@@ -36,6 +38,9 @@ public class GroupMembership {
 
     @Enumerated(EnumType.STRING)
     private MembershipStatus membershipStatus;
+
+    @Column(columnDefinition = "DATETIME(6)")
+    private LocalDateTime removedAt;
 
     @Override
     public boolean equals(Object o) {

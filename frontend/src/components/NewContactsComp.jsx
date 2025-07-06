@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import NewContactComp from "./NewContactComp.jsx";
 import {useUserContext} from "../context/UserContext.jsx";
 import styles from "../style/ChatSelection.module.css"
+import {BASE_URL} from '../config';
 
 function NewContactsComp() {
 
@@ -33,8 +34,12 @@ function NewContactsComp() {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(
-                `http://localhost:8080/search/newContacts?searchTerm=${searchQuery}&userId=${user.userId}`);
+                `${BASE_URL}/search/newContacts?searchTerm=${searchQuery}&userId=${user.userId}`,{
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
             const newContactsData = await response.json();
             setNewContacts(newContactsData);
         } catch (error) {

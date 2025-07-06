@@ -11,6 +11,7 @@ function Message({message}){
     const {user} = useUserContext();
     const {selectedContactDetails} = useSelectedContactContext();
     const files = message.files;
+    console.log("Msg:",message);
 
     let avatarContact = null;
 
@@ -24,13 +25,15 @@ function Message({message}){
         );
     }
 
-    useEffect(() => {
+    const isSelfMessage = message.senderId === user.userId;
+
+    /*useEffect(() => {
         console.log("selectedContactDetails changed", selectedContactDetails);
     }, [selectedContactDetails]);
 
     useEffect(() => {
         console.log("groupMemberDetails changed", selectedContactDetails.groupMemberDetails);
-    }, [selectedContactDetails.groupMemberDetails]);
+    }, [selectedContactDetails.groupMemberDetails]);*/
 
 
     /*const avatarContact = useMemo(() => {
@@ -82,28 +85,72 @@ function Message({message}){
 
     return (
         <>
-            <div className={`${styles.container} ${message.senderId === user.userId ? styles.messageSelf : styles.messageNotSelf}`}>
-                <div className={avatar.avatarWrapper}>
-                    {avatarContact && (
-                        <AvatarComp
-                            contact={avatarContact}
-                            isStatusNeeded={message.senderId !== user.userId}
-                            styles={avatar}
-                        />
-                    )}
-                </div>
-
-                <div className={styles.messageBody}>
-                    <div className={styles.messageMeta}>
-                        {`${message.sender} | ${formatTimestamp(message.timestamp)}`}
+            {message.messageType === "TEXT_MESSAGE" && (
+                <div className={`${styles.textMessagecontainer} ${message.senderId === user.userId ? styles.messageSelf : styles.messageNotSelf}`}>
+                    <div className={avatar.avatarWrapper}>
+                        {avatarContact && (
+                            <AvatarComp
+                                contact={avatarContact}
+                                isStatusNeeded={message.senderId !== user.userId}
+                                styles={avatar}
+                            />
+                        )}
                     </div>
-                    <div className={styles.messageContent}>
-                        <div className={styles.para}>{message.content}</div>
-                        {files && files.length > 0 && files.map((file,index) => renderFile(file,index))}
+
+                    <div className={styles.messageBody}>
+                        <div className={styles.messageMeta}>
+                            {`${message.sender} | ${formatTimestamp(message.timestamp)}`}
+                        </div>
+                        <div className={styles.messageContent}>
+                            <div className={styles.para}>{message.content}</div>
+                            {files && files.length > 0 && files.map((file,index) => renderFile(file,index))}
+                        </div>
                     </div>
                 </div>
-            </div>
-
+            )}
+            {message.messageType === "GROUP_DP_CHANGED" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} changed the Profile Picture`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_DP_REMOVED" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} removed the Profile Picture`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_DP_ADDED" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} added the Profile Picture`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_MEMBER_ADD" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} added ${message.linkedUsers.map(user => user.name).join(", ")} to the group`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_MEMBER_REMOVED" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} removed ${message.linkedUsers.map(user => user.name).join(", ")} from the group`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_NAME_CHANGE" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} changed group name to '${message.content}'`}</small>
+                </div>
+            )}
+            {message.messageType === "GROUP_CREATION" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} created group '${message.content}'`+
+                        (message.linkedUsers && message.linkedUsers.length > 0
+                            ? ` and added ${message.linkedUsers.map(user => user.name).join(", ")}`
+                            : "")}</small>
+                </div>
+            )}
+            {message.messageType === "USER_LEFT_GROUP" && (
+                <div className={`${styles.updateMessagecontainer}`}>
+                    <small>{`${isSelfMessage ? 'You' : message.sender} left the group`}</small>
+                </div>
+            )}
         </>
         )
 }

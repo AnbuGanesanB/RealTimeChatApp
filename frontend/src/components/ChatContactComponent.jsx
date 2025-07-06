@@ -8,8 +8,9 @@ import AvatarComp from "./AvatarComp.jsx";
 export function ContactComponent ({contact, tab}) {
     const {recipientId} = useRecipientContext();
     const handleRecipientSelection = useContactSelection();
-    const {statusColors} = useUserContext();
+    const {user,statusColors} = useUserContext();
     const statusColor = statusColors[contact.onlineStatus];
+    const isSelfMessage = contact.lastMessageSenderId === user.userId;
 
     return (
         <div className={`
@@ -23,9 +24,8 @@ export function ContactComponent ({contact, tab}) {
                     <AvatarComp contact={contact} isStatusNeeded={contact.type==="USER"} styles={styles} />
                     <div className={styles.content}>
                         <div>{contact.contactPersonOrGroupName}</div>
-                        <div>Hello: Hello</div>
+                        {contact.lastMessageFromUser ? <div className={styles.contentRow}>{`${isSelfMessage ? 'You' : contact.lastMessageFromUser}: ${contact.lastMessageContent}`}</div> : <div>Send First Message</div>}
                         {contact.unreadMessages > 0 && <span className={styles.unreadCounter}>{contact.unreadMessages}</span>}
-                        {/*<div>{user.aboutMe || " "}</div>*/}
                     </div>
                 </>
             )}
@@ -33,9 +33,11 @@ export function ContactComponent ({contact, tab}) {
                 <>
                     <AvatarComp contact={contact} isStatusNeeded={contact.type==="USER"} styles={styles} />
                     <div className={styles.content}>
-                        <div>{contact.contactPersonOrGroupName}</div>
-                        <div>Hello: Hello</div>
-                        {/*<div>{user.aboutMe || " "}</div>*/}
+                        <div>{contact.nickName === contact.contactPersonOrGroupName
+                            ? contact.nickName
+                            : `${contact.nickName} (${contact.contactPersonOrGroupName})`}</div>
+                        <div className={styles.contentRow}>{contact.aboutMe ? contact.aboutMe : contact.lastMessageFromUser ? `${isSelfMessage ? 'You' : contact.lastMessageFromUser}: ${contact.lastMessageContent}` : 'Send first Message'}</div>
+                        {contact.unreadMessages > 0 && <span className={styles.unreadCounter}>{contact.unreadMessages}</span>}
                     </div>
                 </>
             )}
@@ -43,9 +45,11 @@ export function ContactComponent ({contact, tab}) {
                 <>
                     <AvatarComp contact={contact} isStatusNeeded={contact.type==="USER"} styles={styles} />
                     <div className={styles.content}>
-                        <div>{contact.contactPersonOrGroupName}</div>
-                        <div>Hello: Hello</div>
-                        {/*<div>{user.aboutMe || " "}</div>*/}
+                        <div>{contact.nickName === contact.contactPersonOrGroupName
+                            ? contact.nickName
+                            : `${contact.nickName} (${contact.contactPersonOrGroupName})`}</div>
+                        <div className={styles.contentRow}>{`${contact.groupMemberDetails.length - contact.removedMemberIds.length} Active Members`}</div>
+                        {contact.unreadMessages > 0 && <span className={styles.unreadCounter}>{contact.unreadMessages}</span>}
                     </div>
                 </>
             )}

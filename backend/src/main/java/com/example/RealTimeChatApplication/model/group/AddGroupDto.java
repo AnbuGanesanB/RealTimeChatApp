@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class AddGroupDto {
 
-    //private int creatorId;
+    private int creatorId;
     private String name;
     private List<Integer> members;
 }

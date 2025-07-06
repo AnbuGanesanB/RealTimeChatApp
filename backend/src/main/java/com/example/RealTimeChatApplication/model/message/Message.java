@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class Message {
     @Column
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME(6)")
     private LocalDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -42,12 +43,24 @@ public class Message {
     private Group grpRecipient;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MessageType messageType;
 
     @OneToMany(mappedBy = "linkedMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SharedFile> sharedFiles = new HashSet<>();
 
     private boolean isContainsFile;
+
+    @ManyToMany
+    @JoinTable(
+            name = "message_linked_users",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> linkedUsers = new HashSet<>();
+
+    @Column(columnDefinition = "TIMESTAMP(6)")
+    private Instant timestamp2;
 
     @Override
     public boolean equals(Object o) {

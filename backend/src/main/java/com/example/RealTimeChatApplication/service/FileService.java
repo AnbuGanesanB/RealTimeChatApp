@@ -1,6 +1,7 @@
 package com.example.RealTimeChatApplication.service;
 
 import com.example.RealTimeChatApplication.model.files.SharedFile;
+import com.example.RealTimeChatApplication.model.group.Group;
 import com.example.RealTimeChatApplication.model.message.Message;
 import com.example.RealTimeChatApplication.model.user.User;
 import com.example.RealTimeChatApplication.repositories.FileRepo;
@@ -74,6 +75,27 @@ public class FileService {
         }
         return user;
     }
+
+    public Group setGroupPicture(MultipartFile profilePic, Group group){
+        System.out.println("In group DP..");
+        try {
+            String originalFilename = profilePic.getOriginalFilename();
+            String uniqueFileName = UUID.randomUUID() + "_" + originalFilename;
+
+            Path uploadPath = Paths.get(displayPictureDirectory).resolve(uniqueFileName);
+            System.out.println("Upload Path: "+uploadPath);
+
+            Files.createDirectories(uploadPath.getParent());
+            profilePic.transferTo(uploadPath.toFile());
+
+            group.setDpPath(uniqueFileName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return group;
+    }
+
 
     public String getOriginalFileName(String uniqueFileName){
         return fileRepo.findByUniqueFileName(uniqueFileName)

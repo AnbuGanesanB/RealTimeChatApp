@@ -79,7 +79,9 @@ function LoginPage() {
     };
 
     return(
-        <>
+        <div className="login-screen">
+            {/*<img src="../assets/Welcome%201%20(1).jpg" alt="home page image">
+            </img>*/}
             <div className="login-page-card">
                 <nav>
                     <div className="nav nav-tabs d-flex w-100" id="nav-tab" role="tablist">
@@ -127,7 +129,7 @@ function LoginPage() {
                     </div>
                 </div>
             </div>
-        </>)
+        </div>)
 }
 
 export default LoginPage;

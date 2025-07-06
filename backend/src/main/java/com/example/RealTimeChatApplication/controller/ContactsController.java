@@ -4,6 +4,7 @@ import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
 import com.example.RealTimeChatApplication.model.contact.AddContactDto;
 import com.example.RealTimeChatApplication.model.contact.Contact;
 import com.example.RealTimeChatApplication.model.contact.ContactDetailsDto;
+import com.example.RealTimeChatApplication.model.message.OutMessageDto;
 import com.example.RealTimeChatApplication.model.user.LoginUserDto;
 import com.example.RealTimeChatApplication.model.user.User;
 import com.example.RealTimeChatApplication.model.user.UserDetailsDto;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,15 @@ public class ContactsController {
 
         //Contact contact = contactService.getContactByOwnerAndContactPerson(owner,contactPerson);
         ContactDetailsDto contactDetailsDto = contactDetailsMapper.retrieveContactDetails(contact);
-        String dest = "/user/"+owner.getId().toString()+"/queue/updates";
+        String dest = "/user/"+owner.getId().toString()+"/queue/newContact";
         simpMessagingTemplate.convertAndSend(dest,contactDetailsDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/editUser")
+    public void getAllChats(@RequestParam(value = "contactId") int contactId,
+                            @RequestParam(value = "nickName") String nickName){
+        Contact updatedContact = contactService.updateNickName(contactId,nickName);
+        contactService.sendUpdatedContactMessageToUser(updatedContact.getOwner(),updatedContact);
     }
 }

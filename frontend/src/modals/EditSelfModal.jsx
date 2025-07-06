@@ -109,7 +109,7 @@ function EditSelfModal({onClose}) {
                                                         <input type="file" id="dpImageInput" className={styles.hiddenFileInput}
                                                                onChange={handleFileChange} accept="image/*"/>
                                                     </div>
-                                            </div>
+                                                </div>
                                             </div>
                                             )}
                                         {activeTab === "AboutMe" && (

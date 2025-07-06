@@ -2,11 +2,14 @@ import {useState} from "react";
 import {useRecipientContext} from "../context/RecipientContext.jsx";
 import Message from "./Message.jsx";
 import {UploadMessageRequest} from "../service/service.js";
+import {useUserContext} from "../context/UserContext.jsx";
+import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 
 function MessageUtil() {
 
     const {recipientId} = useRecipientContext();
-
+    const {user} = useUserContext();
+    const {selectedContactDetails} = useSelectedContactContext();
 
     const [currentMessage,setCurrentMessage] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -87,7 +90,13 @@ function MessageUtil() {
                                     <div>
                                         <button type="submit"
                                                 className="btn btn-primary btn-sm"
-                                                disabled={!recipientId}
+                                                disabled={
+                                                    !recipientId ||
+                                                    (
+                                                        Array.isArray(selectedContactDetails?.removedMemberIds) &&
+                                                        selectedContactDetails.removedMemberIds.includes(user.userId)
+                                                    )
+                                                }
                                         >
                                             <i className="bi bi-chevron-double-right"></i>
                                         </button>
