@@ -38,8 +38,8 @@ public class SecurityConfig {
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfig))
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login","/register","/signin"
-                                ,"/files/preview/**", "/files/download/**", "/dp/**","/ws/**")
+                        .requestMatchers("/login","/register",
+                                "/files/preview/**", "/files/download/**", "/dp/**","/ws/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

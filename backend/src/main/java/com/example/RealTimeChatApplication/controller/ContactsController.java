@@ -4,8 +4,6 @@ import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
 import com.example.RealTimeChatApplication.model.contact.AddContactDto;
 import com.example.RealTimeChatApplication.model.contact.Contact;
 import com.example.RealTimeChatApplication.model.contact.ContactDetailsDto;
-import com.example.RealTimeChatApplication.model.message.OutMessageDto;
-import com.example.RealTimeChatApplication.model.user.LoginUserDto;
 import com.example.RealTimeChatApplication.model.user.User;
 import com.example.RealTimeChatApplication.model.user.UserDetailsDto;
 import com.example.RealTimeChatApplication.service.ContactService;
@@ -16,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +42,7 @@ public class ContactsController {
     public ResponseEntity<List<UserDetailsDto>> searchUsers(
             @RequestParam String searchTerm,
             @RequestParam Integer userId) {
-        List<UserDetailsDto> users = userService.searchUsersExcludingContacts(searchTerm, userId);
+        List<UserDetailsDto> users = userService.searchUsersExcludingContacts(searchTerm.trim(), userId);
         return ResponseEntity.ok(users);
     }
 

@@ -5,8 +5,6 @@ const getToken = () => {
 };
 
 export const sendNewContactRequest = async (senderId, contactId) => {
-    console.log("sendNewContactRequest senderId : " + senderId);
-    console.log("sendNewContactRequest contactId : " + contactId);
 
     try {
         const response = await fetch(`${BASE_URL}/addcontact`, {
@@ -24,7 +22,6 @@ export const sendNewContactRequest = async (senderId, contactId) => {
 
     } catch (error) {
         console.error("Error:", error.message);
-        alert("Req. failed! Please try again.");
     }
 }
 
@@ -37,52 +34,15 @@ export const sendNewGroupRequest = async (addGroupData) => {
         });
 
         if (!response.ok) {
-            throw new Error("Group Creation failed.");
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.message || "New Grp Req failed!");
         }
 
     } catch (error) {
-        console.error("Error:", error.message);
-        alert("Group Creation - failed! Please try again.");
-    }
-}
-/*
-
-export const sendEditGroupRequest = async (editGroupData) => {
-    try {
-        const response = await fetch(`${BASE_URL}/editgroup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-            body: JSON.stringify(editGroupData),
-        });
-
-        if (!response.ok) {
-            throw new Error("Group Modification failed.");
-        }
-
-    } catch (error) {
-        console.error("Error:", error.message);
-        alert("Group Modification - failed! Please try again.");
+        throw error;
     }
 }
 
-export const sendEditContactRequest = async (editContactData) => {
-    try {
-        const response = await fetch(`${BASE_URL}/editcontact`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-            body: JSON.stringify(editContactData),
-        });
-
-        if (!response.ok) {
-            throw new Error("Contact Modification failed.");
-        }
-
-    } catch (error) {
-        console.error("Error:", error.message);
-        alert("Contact Modification - failed! Please try again.");
-    }
-}
-*/
 
 export const UploadMessageRequest = async (formData) => {
     try {
@@ -98,7 +58,6 @@ export const UploadMessageRequest = async (formData) => {
 
     } catch (error) {
         console.error("Error:", error.message);
-        alert("Message Upload - failed! Please try again.");
     }
 }
 
@@ -146,10 +105,11 @@ export const editUserContact = async (editedUserContactData) => {
         });
 
         if (!response.ok) {
-            throw new Error("Edit Nickname failed!");
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.message || "Edit Nickname failed!");
         }
     } catch (error) {
-        console.error("Error:", error.message);
+        throw error;
     }
 };
 
@@ -170,10 +130,11 @@ export const editGroupContact = async (editedGroupContactData) => {
         });
 
         if (!response.ok) {
-            throw new Error("Edit Group failed!");
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.message || "Edit Group failed!");
         }
     } catch (error) {
-        console.error("Error:", error.message);
+        throw error;
     }
 };
 
@@ -224,13 +185,13 @@ export const sendEditDisplayProfileRequest = async (displayProfileData) => {
         });
 
         if (!response.ok) {
-            throw new Error("DP profile change failed.");
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.message || "Edit Display Profile failed!");
         }
         return response;
 
     } catch (error) {
-        console.error("Error:", error.message);
-        alert("DP Profile change - failed! Please try again.");
+        throw error;
     }
 }
 
@@ -242,7 +203,6 @@ export const fetchUser = async () => {
         const response = await fetch(`${BASE_URL}/fetchUser`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }
-            //body: JSON.stringify({ loggedUserId: userId }),
         });
 
         if (!response.ok) {

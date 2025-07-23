@@ -26,4 +26,6 @@ public interface GroupMembershipRepo extends JpaRepository<GroupMembership, Inte
     }
 
     Optional<GroupMembership> findByGroupIdAndGroupMemberId(Group group, User user);
+
+    List<GroupMembership> findByGroupMemberId(User user);
 }

@@ -27,7 +27,7 @@ html, body, .chat-selection-component {
 .message-util {
     bottom:0;
     padding: 10px;
-    background-color: #888888;
+    background-color: rgba(12, 60, 85, 0.81);
     width: inherit;
     min-height: 60px;
     flex-shrink: 0;

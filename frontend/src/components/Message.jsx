@@ -2,16 +2,16 @@ import styles from '../style/message.module.css';
 import {useUserContext} from "../context/UserContext.jsx";
 import avatar from "../style/avatarMini.module.css";
 import AvatarComp from "../components/AvatarComp";
-import contactCss from "../style/contact.module.css";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
-import {useEffect, useMemo} from "react";
+import {BASE_URL} from '../config';
+
 
 function Message({message}){
 
     const {user} = useUserContext();
     const {selectedContactDetails} = useSelectedContactContext();
     const files = message.files;
-    console.log("Msg:",message);
+    //console.log("Msg:",message);
 
     let avatarContact = null;
 
@@ -27,23 +27,6 @@ function Message({message}){
 
     const isSelfMessage = message.senderId === user.userId;
 
-    /*useEffect(() => {
-        console.log("selectedContactDetails changed", selectedContactDetails);
-    }, [selectedContactDetails]);
-
-    useEffect(() => {
-        console.log("groupMemberDetails changed", selectedContactDetails.groupMemberDetails);
-    }, [selectedContactDetails.groupMemberDetails]);*/
-
-
-    /*const avatarContact = useMemo(() => {
-        if (message.senderId === user.userId) return user;
-        if (message.indRecipientId) return selectedContactDetails;
-        return selectedContactDetails.groupMemberDetails?.find(
-            member => member.id === message.senderId
-        );
-    }, [message.senderId, message.indRecipientId, user, selectedContactDetails, selectedContactDetails.groupMemberDetails]);
-*/
     function renderFile(file,index){
 
         const isImage = file.originalFileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
@@ -54,22 +37,22 @@ function Message({message}){
                     {isImage ? (
                         <>
                             <a
-                                href={`http://localhost:8080/files/preview/${file.uniqueFileName}`}
+                                href={`${BASE_URL}/files/preview/${file.uniqueFileName}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 <img className={styles.image}
-                                    src={`http://localhost:8080/files/preview/${file.uniqueFileName}`}
+                                    src={`${BASE_URL}/files/preview/${file.uniqueFileName}`}
                                     style={{ maxWidth: "200px", marginBottom: "8px" }}
                                 />
                             </a>
                             <br />
-                            <a href={`http://localhost:8080/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
+                            <a href={`${BASE_URL}/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
                                 <i className={`bi bi-download ${styles.imageDownload}`} />
                             </a>
                         </>
                     ) : (
-                        <a className={styles.fileDownload} href={`http://localhost:8080/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
+                        <a className={styles.fileDownload} href={`${BASE_URL}/files/download/${file.uniqueFileName}`} download={file.originalFileName}>
                             {file.originalFileName}
                         </a>
                     )}

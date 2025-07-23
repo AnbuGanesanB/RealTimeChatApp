@@ -9,9 +9,16 @@ export function useContactSelection() {
         console.log("In handle selection Method");
         if (contact.id === recipientId) return;
         console.log("contact.id !== recipientId");
-        console.log("Actual current recipientId is " + recipientId);
-        setPreviousContactId(prev => recipientId);
+        console.log("Before assigning values...");
+        console.log("Actual current contact.id is: ", contact.id);
+        console.log("Actual current recipientId is: " ,recipientId);
+
+        setPreviousContactId(recipientId);
         setRecipientId(contact.id);
+
+        console.log("After assigning values...");
+        console.log("Actual current contact.id is: ", contact.id);
+        console.log("Actual current recipientId is: " ,recipientId);
 
         const newContactDetails = {
             addedDate: contact.addedDate,

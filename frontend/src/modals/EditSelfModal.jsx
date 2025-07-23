@@ -1,10 +1,10 @@
 import {createPortal} from "react-dom";
 import {useEffect, useState} from "react";
-import {ContactComponent} from "../components/ChatContactComponent.jsx";
 import {useUserContext} from "../context/UserContext.jsx";
 import {notifyProfileUpdate, sendEditDisplayProfileRequest} from "../service/service.js";
 import { useBootstrapModalClose, modalHide } from '../service/utilities.js'
 import styles from '../style/EditSelfModal.module.css';
+import {BASE_URL} from "../config.js";
 
 function EditSelfModal({onClose}) {
     const {user, setUser} = useUserContext();
@@ -16,6 +16,10 @@ function EditSelfModal({onClose}) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(user.dpPath);
     const [isDpChanged, setIsDpChanged] = useState(false);
+
+    const [userNameError, setUserNameError] = useState(null);
+    const [picFormatError, setPicFormatError] = useState(null);
+    const [picSizeError, setPicSizeError] = useState(null);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -44,17 +48,28 @@ function EditSelfModal({onClose}) {
         formData.append("userId", user.userId);
         formData.append("isDpChanged",isDpChanged);
 
-        const response = await sendEditDisplayProfileRequest(formData);
-        if(response && response.ok) {
-            const updatedProfile = await response.json();
-            setUser(prev => ({
-                ...updatedProfile,
-                isLoggedIn: prev.isLoggedIn
-            }));
-            await notifyProfileUpdate(user.userId);
+        try{
+            setUserNameError(null);
+            setPicFormatError(null);
+            setPicSizeError(null);
+            const response = await sendEditDisplayProfileRequest(formData);
+            if(response && response.ok) {
+                const updatedProfile = await response.json();
+                setUser(prev => ({
+                    ...updatedProfile,
+                    isLoggedIn: prev.isLoggedIn
+                }));
+                await notifyProfileUpdate(user.userId);
 
-            modalHide("editSelfModal");
+                modalHide("editSelfModal");
+            }
+        }catch (error) {
+            const actualErrorMessage = error.message;
+            if(actualErrorMessage.includes("Username")) setUserNameError(actualErrorMessage);
+            else if(actualErrorMessage.includes("type")) setPicFormatError(actualErrorMessage);
+            else if(actualErrorMessage.includes("size")) setPicSizeError(actualErrorMessage);
         }
+
     }
 
     const handleEditImage = (event) => {
@@ -92,7 +107,7 @@ function EditSelfModal({onClose}) {
                                                 <div className={styles.imageContainer}>
 
                                                     {previewUrl && !selectedFile && (
-                                                        <img className={styles.image} src={`http://localhost:8080/dp/${previewUrl}`} alt="Profile Pic Preview"/>)}
+                                                        <img className={styles.image} src={`${BASE_URL}/dp/${previewUrl}`} alt="Profile Pic Preview"/>)}
                                                     {previewUrl && selectedFile && (
                                                         <img className={styles.image} src={`${previewUrl}`} alt="Profile Pic Preview"/>)}
                                                     {!previewUrl && !selectedFile && (
@@ -110,6 +125,16 @@ function EditSelfModal({onClose}) {
                                                                onChange={handleFileChange} accept="image/*"/>
                                                     </div>
                                                 </div>
+                                                {picFormatError && (
+                                                    <div style={{color:'red'}}>
+                                                        {picFormatError}
+                                                    </div>
+                                                )}
+                                                {picSizeError && (
+                                                    <div style={{color:'red'}}>
+                                                        {picSizeError}
+                                                    </div>
+                                                )}
                                             </div>
                                             )}
                                         {activeTab === "AboutMe" && (
@@ -126,6 +151,11 @@ function EditSelfModal({onClose}) {
                                                        placeholder="Your name..."
                                                        value={name}
                                                        onChange={(e) => setName(e.target.value)} />
+                                                {userNameError && (
+                                                    <div style={{color:'red'}}>
+                                                        {userNameError}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

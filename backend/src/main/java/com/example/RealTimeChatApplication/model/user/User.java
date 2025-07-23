@@ -73,6 +73,26 @@ public class User implements UserDetails {
         return initials.toString().toUpperCase();
     }
 
+    public void setUserName(String userName){
+        if (userName == null || userName.isEmpty()) {
+            this.userName = userName;
+            return;
+        }
+
+        String[] parts = userName.trim().split("\\s+");
+        StringBuilder formattedName = new StringBuilder();
+
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                formattedName.append(part.substring(0, 1).toUpperCase())
+                        .append(part.substring(1).toLowerCase())
+                        .append(" ");
+            }
+        }
+
+        this.userName = formattedName.toString().trim();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,5 +1,5 @@
 import {useUserContext} from "../context/UserContext.jsx";
-import toputil from '../style/topUtil.module.css';
+import styles from '../style/topUtil.module.css';
 import StatusSelector from './StatusSelector.jsx';
 import {BASE_URL} from "../config.js";
 
@@ -10,25 +10,25 @@ function TopUtil({ onEditSelfProfile }){
     const statusColor = statusColors[user.onlineStatus];
 
     return (
-        <div className={toputil.container}>
-            <div className={toputil.toprow}>
-                <div className={toputil.avatarWrapper}>
+        <div className={styles.container}>
+            <div className={styles.toprow}>
+                <div className={styles.avatarWrapper}>
                     {user.dpAvailable ?
-                        (<img className={toputil.avatarDp} src={`${BASE_URL}/dp/${user.dpPath}`}
+                        (<img className={styles.avatarDp} src={`${BASE_URL}/dp/${user.dpPath}`}
                         />)
-                        : (<div className={toputil.initials}>
+                        : (<div className={styles.initials}>
                             {user.initials}
                         </div>)}
-                    <button style={{ backgroundColor: statusColor }} className={toputil.statusIndicator}>
+                    <button style={{ backgroundColor: statusColor }} className={styles.statusIndicator}>
                     <StatusSelector/>
                     </button>
                 </div>
-                <div className={toputil.profileInfo}>
+                <div className={styles.profileInfo}>
                     <div>{user.name}</div>
                     <div>{user.aboutMe || " "}</div>
                 </div>
             </div>
-            <button className={toputil.editButton} type="button" onClick={onEditSelfProfile}>
+            <button className={styles.editButton} type="button" onClick={onEditSelfProfile}>
                 <i className="bi bi-three-dots" />
             </button>
         </div>)

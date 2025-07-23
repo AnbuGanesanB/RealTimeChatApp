@@ -1,19 +1,16 @@
 import {createPortal} from "react-dom";
 import {useEffect, useState} from "react";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
-import {useContactsContext} from "../context/ContactsContext.jsx";
 import {editUserContact} from "../service/service.js";
-import {useRecipientContext} from "../context/RecipientContext.jsx";
 import {useBootstrapModalClose,modalHide} from "../service/utilities.js";
 import {Modal} from "bootstrap";
 
 function EditUserContactModal({onClose}){
 
-    const {recipientId, setRecipientId} = useRecipientContext();
-    const {contacts, setContacts} = useContactsContext();
     const {selectedContactDetails} = useSelectedContactContext();
 
-    const[nickName, setNickName] = useState(selectedContactDetails.nickName);
+    const [nickName, setNickName] = useState(selectedContactDetails.nickName);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     useBootstrapModalClose("editUserModal",onClose);
 
@@ -23,9 +20,12 @@ function EditUserContactModal({onClose}){
         const editedUserContactData = new FormData();
         editedUserContactData.append("contactId",selectedContactDetails.id);
         editedUserContactData.append("nickName",nickName);
-        await editUserContact(editedUserContactData);
-
-        modalHide("editUserModal");
+        try{
+            await editUserContact(editedUserContactData);
+            modalHide("editUserModal");
+        }catch(error){
+            setErrorMessage(error.message);
+        }
     }
 
     function handleNewNickName(e) {
@@ -60,6 +60,11 @@ function EditUserContactModal({onClose}){
                                                         name="nickName"
                                                         onChange={(e)=>handleNewNickName(e)} required
                                                         value={nickName} />
+                                                {errorMessage && (
+                                                    <div style={{color:'red'}}>
+                                                        {errorMessage}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

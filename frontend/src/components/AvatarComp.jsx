@@ -1,4 +1,5 @@
 import {useUserContext} from "../context/UserContext.jsx";
+import {BASE_URL} from "../config.js";
 
 function AvatarComp({ contact, isStatusNeeded, styles }) {
 
@@ -9,7 +10,7 @@ function AvatarComp({ contact, isStatusNeeded, styles }) {
         <>
             <div className={styles.avatarWrapper}>
                 {dpAvailable
-                    ? (<img className={styles.avatarDp} src={`http://localhost:8080/dp/${dpPath}`} />)
+                    ? (<img className={styles.avatarDp} src={`${BASE_URL}/dp/${dpPath}`} />)
                     : (<div className={styles.initials}>
                         {initials}
                     </div>)}

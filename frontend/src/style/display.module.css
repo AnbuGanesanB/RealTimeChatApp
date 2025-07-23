@@ -1,10 +1,12 @@
 .welcomeContainer {
-    background-color: #4b4c4b;
     width: inherit;
     flex: 1;
-    /*background-image: url("Welcome_2.jpg");
-    background-size: cover;*/
-    background: linear-gradient(to bottom right, #bb12f3, #6fb1fc);
+    background: #4b4c4b linear-gradient(to right, #6b99b6, #5186c3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .chatContainer {
@@ -12,10 +14,10 @@
     display: flex;
     justify-content: flex-start;
     width: inherit;
-    /*top:50px;
-    bottom: 70px;*/
     flex-direction: column;
-    background-color: #b392e4;
+    background-color: #89a3c6;
+    //background: linear-gradient(to right, #8792bd, #5186c3);
+    //background-color: #b392e4;
     padding: 10px;
     overflow-y: auto;
 }

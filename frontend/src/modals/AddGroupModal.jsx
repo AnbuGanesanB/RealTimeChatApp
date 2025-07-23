@@ -46,6 +46,7 @@ function AddGroupModal({onClose}) {
 
     const [groupName, setGroupName] = useState("");
     const [selectedContactIds, setSelectedContactIds] = useState([user.userId]);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     useBootstrapModalClose("addGroupModal",onClose);
 
@@ -63,9 +64,13 @@ function AddGroupModal({onClose}) {
             name: groupName,
             members: selectedContactIds,
         };
-        await sendNewGroupRequest(addGroupData);
+        try{
+            await sendNewGroupRequest(addGroupData);
+            modalHide("addGroupModal");
+        }catch (error){
+            setErrorMessage(error.message);
+        }
 
-        modalHide("addGroupModal");
     }
 
     return createPortal(
@@ -96,6 +101,11 @@ function AddGroupModal({onClose}) {
                                                         name="groupName"
                                                         onChange={(e)=>handleNewName(e)} required
                                                         value={groupName} />
+                                                {errorMessage && (
+                                                    <div style={{color:'red'}}>
+                                                        {errorMessage}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

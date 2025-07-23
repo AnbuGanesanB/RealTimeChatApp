@@ -43,35 +43,4 @@ public class AppStartUp {
         };
     }*/
 
-    /*private LocalDateTime truncateToMicros(LocalDateTime dateTime) {
-        return dateTime.withNano((dateTime.getNano() / 1000) * 1000);
-    }*/
-
-    /*@Bean
-    public CommandLineRunner testMessage() {
-        return args -> {
-
-            System.out.println("Starting command Line runner-");
-            User user1 = userService.getUserById(1);
-            User user2 = userService.getUserById(2);
-            Message message = new Message();
-            message.setSender(user1);
-            message.setIndRecipient(user2);
-            message.setMessageType(MessageType.TEXT_MESSAGE);
-            message.setContent("Trial 6");
-
-            LocalDateTime localTime = LocalDateTime.now();
-            System.out.println("Before truncate localTime:"+localTime);
-            localTime = truncateToMicros(localTime);
-            System.out.println("After truncate localTime:"+localTime);
-            message.setTimestamp(localTime);
-
-            Instant instantTime = Instant.now();
-            System.out.println("Instant:"+instantTime);
-            message.setTimestamp2(Instant.now());
-
-            messageRepo.save(message);
-        };
-    }*/
-
 }

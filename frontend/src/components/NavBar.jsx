@@ -1,4 +1,3 @@
-import SignOutComponent from "./SignOutComponent.jsx";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import NavbarSubmenuComp from "./NavbarSubmenuComp.jsx";
 import NavContactDisplay from "./NavContactDisplay.jsx";

@@ -1,30 +1,17 @@
 package com.example.RealTimeChatApplication.controller;
 
-import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
 import com.example.RealTimeChatApplication.mapper.UserDetailMapper;
-import com.example.RealTimeChatApplication.model.contact.AddContactDto;
-import com.example.RealTimeChatApplication.model.contact.Contact;
-import com.example.RealTimeChatApplication.model.contact.ContactDetailsDto;
-import com.example.RealTimeChatApplication.model.group.AddGroupDto;
-import com.example.RealTimeChatApplication.model.group.EditGroupDto;
-import com.example.RealTimeChatApplication.model.message.OutMessageDto;
 import com.example.RealTimeChatApplication.model.user.*;
-import com.example.RealTimeChatApplication.service.ContactService;
-import com.example.RealTimeChatApplication.service.GroupService;
-import com.example.RealTimeChatApplication.service.MessageService;
 import com.example.RealTimeChatApplication.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -36,7 +23,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public void registerNewUser(@RequestBody RegisterDto registerDto){
+    public void registerNewUser(@RequestBody @Valid RegisterDto registerDto){
         userService.createNewUser(registerDto);
     }
 

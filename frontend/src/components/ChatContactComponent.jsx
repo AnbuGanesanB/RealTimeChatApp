@@ -33,7 +33,7 @@ export function ContactComponent ({contact, tab}) {
                 <>
                     <AvatarComp contact={contact} isStatusNeeded={contact.type==="USER"} styles={styles} />
                     <div className={styles.content}>
-                        <div>{contact.nickName === contact.contactPersonOrGroupName
+                        <div className={styles.contentRow}>{contact.nickName === contact.contactPersonOrGroupName
                             ? contact.nickName
                             : `${contact.nickName} (${contact.contactPersonOrGroupName})`}</div>
                         <div className={styles.contentRow}>{contact.aboutMe ? contact.aboutMe : contact.lastMessageFromUser ? `${isSelfMessage ? 'You' : contact.lastMessageFromUser}: ${contact.lastMessageContent}` : 'Send first Message'}</div>

@@ -1,9 +1,9 @@
-import toputil from '../style/topUtil.module.css';
+import styles from '../style/topUtil.module.css';
 import {notifyProfileUpdate, statusChange} from '../service/service.js'
 import {useUserContext} from "../context/UserContext.jsx";
 
 function StatusSelector() {
-    const {user, setUser} = useUserContext();
+    const {user, setUser, statusColors} = useUserContext();
 
     const allStatus = [
         { color: "green", name: "Online", index: 0},
@@ -26,16 +26,15 @@ function StatusSelector() {
     }
 
     return (
-        <div className={toputil.statusSelector}>
-            <ul className={toputil.list}>
+        <div className={styles.statusSelector}>
+            <ul className={styles.list}>
                 {allStatus.map((status,index) => (
                     <li key={index}
-                        className={toputil.status}>
-                        <button className={toputil.statusButton} onClick={()=>handleStatusChange(status)}>
-                            <span className={toputil.statusColor} style={{ backgroundColor: status.color }}></span>
-                            <span className={toputil.statusName}>{status.name}</span>
+                        className={styles.status}>
+                        <button className={styles.statusButton} onClick={()=>handleStatusChange(status)}>
+                            <span className={styles.statusColor} style={{ backgroundColor: status.color }}></span>
+                            <span className={styles.statusName}>{status.name}</span>
                         </button>
-                        {/*{status.replaceAll('_', ' ')}*/}
                     </li>
                 ))}
             </ul>

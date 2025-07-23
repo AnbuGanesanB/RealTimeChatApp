@@ -1,32 +1,32 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import NewContactComp from "./NewContactComp.jsx";
 import {useUserContext} from "../context/UserContext.jsx";
 import styles from "../style/ChatSelection.module.css"
 import {BASE_URL} from '../config';
 
 function NewContactsComp() {
+    const {user} = useUserContext();
 
     const [query, setQuery] = useState("");
     const [newContacts, setNewContacts] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const {user} = useUserContext();
-    let debounceTimer;
+    const debounceTimer = useRef(null);
 
     const handleSearch = (e) => {
         const value = e.target.value;
-        console.log("query: "+value);
+        console.log("query: " + value);
         setQuery(value);
 
-        clearTimeout(debounceTimer);
+        clearTimeout(debounceTimer.current);
 
-        debounceTimer = setTimeout(async () => {
+        debounceTimer.current = setTimeout(async () => {
             await fetchResults(value);
-        }, 2000);
+        }, 1000);
     };
 
     const fetchResults = async (searchQuery) => {
-        if (!searchQuery) {
+        if (!searchQuery.trim()) {
             setNewContacts([]);
             return;
         }
@@ -70,9 +70,7 @@ function NewContactsComp() {
                 </button>
             )}
 
-            {/* Loading Indicator */}
             {loading && <p>Loading...</p>}
-
             {newContacts.map(contact => (<NewContactComp key={contact.id} contact={contact} />))}
 
         </>

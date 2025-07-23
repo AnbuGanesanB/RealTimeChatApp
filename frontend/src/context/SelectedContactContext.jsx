@@ -4,7 +4,7 @@ const SelectedContactContext = createContext();
 
 export const SelectedContactProvider = ({children}) => {
 
-    const resetContact = {
+    const getDefaultContact = () => ({
         addedDate: null,
         contactPersonOrGroupName: "",
         contactPersonOrGroupId: 0,
@@ -16,13 +16,15 @@ export const SelectedContactProvider = ({children}) => {
         type: "",
         groupMemberDetails: null,
         removedMemberIds:null,
-        unreadMessages: 0};
+        unreadMessages: 0});
 
-    const [selectedContactDetails, setSelectedContactDetails] = useState(resetContact);
+    const resetSelectedContact = () => setSelectedContactDetails(getDefaultContact())
+
+    const [selectedContactDetails, setSelectedContactDetails] = useState(getDefaultContact);
 
 
     return (
-        <SelectedContactContext.Provider value={{selectedContactDetails, setSelectedContactDetails, resetContact}}>
+        <SelectedContactContext.Provider value={{selectedContactDetails, setSelectedContactDetails, resetSelectedContact}}>
             {children}
         </SelectedContactContext.Provider>
     );

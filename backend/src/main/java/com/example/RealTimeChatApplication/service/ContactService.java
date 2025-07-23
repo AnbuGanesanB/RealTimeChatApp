@@ -1,6 +1,8 @@
 package com.example.RealTimeChatApplication.service;
 
+import com.example.RealTimeChatApplication.exception.ContactException;
 import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
+import com.example.RealTimeChatApplication.mapper.UserDetailMapper;
 import com.example.RealTimeChatApplication.model.contact.Contact;
 import com.example.RealTimeChatApplication.model.contact.ContactDetailsDto;
 import com.example.RealTimeChatApplication.model.contact.RecipientType;
@@ -8,6 +10,7 @@ import com.example.RealTimeChatApplication.model.group.Group;
 import com.example.RealTimeChatApplication.model.groupMembership.GroupMembership;
 import com.example.RealTimeChatApplication.model.message.Message;
 import com.example.RealTimeChatApplication.model.user.User;
+import com.example.RealTimeChatApplication.model.user.UserDetailsDto;
 import com.example.RealTimeChatApplication.repositories.ContactRepo;
 import com.example.RealTimeChatApplication.repositories.GroupMembershipRepo;
 import com.example.RealTimeChatApplication.repositories.GroupRepo;
@@ -34,6 +37,7 @@ public class ContactService {
     private final GroupRepo groupRepo;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final GroupMembershipRepo groupMembershipRepo;
+    private final UserDetailMapper userDetailMapper;
 
     public Contact getContactById(int contactId){
         return contactRepo.findById(contactId)
@@ -77,6 +81,7 @@ public class ContactService {
     }
 
     public Contact updateNickName(int contactId, String nickName){
+        if(nickName.trim().length()<2) throw new ContactException.ShortContactNameException("Nickname should be minimum 2 characters");
         Contact contact = getContactById(contactId);
         contact.setNickName(nickName);
         return contactRepo.save(contact);
@@ -139,11 +144,13 @@ public class ContactService {
         if(recipientType == RecipientType.USER){
             User contactPerson = contact.getContactPerson();
             if(sender != contactPerson){
-                // Reverse-Contact not exists - New Contact
+                // Reverse-Contact not exists - Need to create new Contact(Reverse contact)
                 if(!existsContact(contactPerson, sender)) {
+                    //  First link the message to sender's contact
+                    linkMessage(contact,message);
 
-                    // Contact-person is the owner and vice-versa - to create new reverse contact
-                    // & Contact Update - sent to real time update
+                    //  Contact-person is the owner and vice-versa - to create new reverse contact
+                    //  & Contact Update - sent to real time update
                     Contact newlySavedReverseContact = addNewUserContactManually(contactPerson, sender);
                     newlySavedReverseContact = incrementUnreadMessages(newlySavedReverseContact);
                     newlySavedReverseContact = linkMessage(newlySavedReverseContact,message);
@@ -159,6 +166,7 @@ public class ContactService {
                 }
             }else{
                 // User's own Contact
+                linkMessage(contact,message);
             }
         } else if (recipientType == RecipientType.GROUP) {
 
@@ -175,7 +183,6 @@ public class ContactService {
                 linkMessage(user_GroupContact,message);
             }
         }
-
         updateLastSeen(contact);
     }
 
@@ -219,6 +226,14 @@ public class ContactService {
         ContactDetailsDto contactDetailsDto = contactDetailsMapper.retrieveContactDetails(contact);
         String dest = "/user/"+member.getId().toString()+"/queue/updatedContact";
         simpMessagingTemplate.convertAndSend(dest,contactDetailsDto);
+    }
+
+    public void sendUpdatedMemberInfoToGroup(User user, Group group){
+        System.out.println("User name:"+user.getUsername());
+        System.out.println("Group name:"+group.getGroupName());
+        UserDetailsDto userDetailsDto = userDetailMapper.getUserDetails(user);
+        String dest = "/group/"+group.getId().toString()+"/queue/updates";
+        simpMessagingTemplate.convertAndSend(dest,userDetailsDto);
     }
 
 }

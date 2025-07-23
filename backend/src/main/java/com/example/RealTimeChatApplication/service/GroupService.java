@@ -1,7 +1,8 @@
 package com.example.RealTimeChatApplication.service;
 
-import com.example.RealTimeChatApplication.mapper.ContactDetailsMapper;
-import com.example.RealTimeChatApplication.mapper.UserDetailMapper;
+import com.example.RealTimeChatApplication.configuration.ProfilePicConfig;
+import com.example.RealTimeChatApplication.exception.ContactException;
+import com.example.RealTimeChatApplication.exception.GroupException;
 import com.example.RealTimeChatApplication.model.contact.Contact;
 import com.example.RealTimeChatApplication.model.contact.RecipientType;
 import com.example.RealTimeChatApplication.model.group.AddGroupDto;
@@ -13,12 +14,8 @@ import com.example.RealTimeChatApplication.model.message.MessageType;
 import com.example.RealTimeChatApplication.model.user.User;
 import com.example.RealTimeChatApplication.repositories.GroupMembershipRepo;
 import com.example.RealTimeChatApplication.repositories.GroupRepo;
-import com.example.RealTimeChatApplication.repositories.MessageRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,13 +33,12 @@ public class GroupService {
     private final FileService fileService;
     private final MessageService messageService;
     private final GroupMembershipRepo groupMembershipRepo;
-
-    @Autowired
-    private TaskScheduler taskScheduler;
-
+    private final ProfilePicConfig profilePicConfig;
 
     @Transactional
     public void createNewGroup(AddGroupDto addGroupDto){
+        if(addGroupDto.getName().trim().length()<2) throw new GroupException.ShortGroupNameException("Group Name should be minimum 2 chars");
+
         Group group = new Group();
         group.setType(RecipientType.GROUP);
         group.setGroupName(addGroupDto.getName());
@@ -60,19 +56,6 @@ public class GroupService {
         Contact creator_grpContact = contactService.getContactByOwnerAndContactGroup(creator,group);
         contactService.processContactsForIncomingMessage(creator_grpContact.getId(),savedMessage);
         contactService.sendUpdatedContactToAllRecipients(creator_grpContact.getId());
-    }
-
-    /**
-     Use this only while New Group creation
-     */
-    public void sendNewContactToRecipients(Group group){
-
-        List<GroupMembership> activeMemberships = groupMembershipRepo.findActiveMembers(group);
-        for(GroupMembership membership: activeMemberships){
-            User member = membership.getGroupMemberId();
-            Contact user_GroupContact = contactService.getContactByOwnerAndContactGroup(member,group);
-            contactService.sendUpdatedContactMessageToUser(user_GroupContact.getOwner(),user_GroupContact);
-        }
     }
 
     /**
@@ -163,6 +146,12 @@ public class GroupService {
         if(profilePic==null){
             group.setDpPath(null);
         }else{
+            if (!profilePicConfig.getAllowedTypes().contains(profilePic.getContentType())) {
+                throw new GroupException.FileTypeMismatchException("File type must be JPG or PNG only");
+            }
+            if(profilePic.getSize()>profilePicConfig.getMaxSize().toBytes()){
+                throw new GroupException.FileOverSizeException("Uploaded file size must be less than "+profilePicConfig.getMaxSize());
+            }
             group = fileService.setGroupPicture(profilePic,group);
         }
 
@@ -194,10 +183,10 @@ public class GroupService {
         contactService.sendUpdatedContactToAllRecipients(contactId);
 
         messageService.distributeMessage(savedMessage,contactId);
-
     }
 
     public Group changeGroupName(Group group, String newName){
+        if(newName.trim().length()<2) throw new GroupException.ShortGroupNameException("Group Name should be minimum 2 chars");
         group.setGroupName(newName);
         return groupRepo.save(group);
     }
@@ -208,6 +197,8 @@ public class GroupService {
         Group group = contact.getContactGroup();
         User sender = contact.getOwner();
         boolean isUserSelfRemoving = false;
+
+        if(newMemberIds==null) throw new GroupException.MinimumMembersException("Minimum one member is mandatory for group");
 
         //Modify members
         List<Integer> currentMemberIds = groupMembershipRepo.findActiveMembers(group).stream().map(m->m.getGroupMemberId()).map(u->u.getId()).toList();
@@ -244,6 +235,8 @@ public class GroupService {
     }
 
     private void processChangeNickName(int contactId, String newNickName) {
+        if(newNickName.trim().length()<2) throw new ContactException.ShortContactNameException("Nickname should be minimum 2 characters");
+
         Contact updatedContact = contactService.updateNickName(contactId,newNickName);
         contactService.sendUpdatedContactMessageToUser(updatedContact.getOwner(),updatedContact);
     }

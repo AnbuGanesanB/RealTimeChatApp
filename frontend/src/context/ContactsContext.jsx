@@ -10,6 +10,7 @@ export const ContactsProvider = ({children}) => {
 
     const {user} = useUserContext();
     const [contacts, setContacts] = useState([]);
+    const resetContacts = () => setContacts([]);
 
     const updateContactMembers = (contactPersonOrGroupId, updatedMemberDetails) => {
         setContacts(prevContacts =>
@@ -50,7 +51,7 @@ export const ContactsProvider = ({children}) => {
     }, [user.userId]); // Depend on senderId so it re fetches when senderId updates
 
     return (
-       <ContactsContext.Provider value={{contacts, setContacts, updateContactMembers}}>
+       <ContactsContext.Provider value={{contacts, setContacts, updateContactMembers, resetContacts}}>
            {children}
        </ContactsContext.Provider>
     )

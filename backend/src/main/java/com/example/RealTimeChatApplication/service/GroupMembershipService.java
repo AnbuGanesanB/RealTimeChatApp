@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -23,7 +24,6 @@ public class GroupMembershipService {
     private final GroupMembershipRepo groupMembershipRepo;
     private final UserRepo userRepo;
     private final GroupRepo groupRepo;
-    private final EntityManager entityManager;
 
     @Transactional
     public GroupMembership createNewGroupMembership(User newMember, Group group){
@@ -42,6 +42,10 @@ public class GroupMembershipService {
         userRepo.save(newMember);
         groupRepo.save(group);
         return groupMembership;
+    }
+
+    public List<GroupMembership> getGroupMemberShips(User user){
+        return groupMembershipRepo.findByGroupMemberId(user);
     }
 
     public GroupMembership findGroupMembership(Group group, User user){
