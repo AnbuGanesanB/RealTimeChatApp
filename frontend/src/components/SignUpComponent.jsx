@@ -1,6 +1,6 @@
 import SignUpConfirmModal from "../modals/SignUpConfirmModal.jsx";
 
-function SignUpComponent({ handleSignUpSubmit }){
+function SignUpComponent({ handleSignUpSubmit, signUpError }){
     return (
         <>
             <form onSubmit={(event) => handleSignUpSubmit(event)}>
@@ -40,11 +40,11 @@ function SignUpComponent({ handleSignUpSubmit }){
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#SignUpConfirmModal">
+                <button type="submit" className="btn btn-success">
                     SignUp
                 </button>
             </form>
-            <SignUpConfirmModal />
+            <SignUpConfirmModal errorMessage={signUpError} />
         </>
     );
 }

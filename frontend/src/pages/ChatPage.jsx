@@ -12,21 +12,36 @@ import EditGroupContactModal from "../modals/EditGroupContactModal.jsx";
 import EditUserContactModal from "../modals/EditUserContactModal.jsx";
 import EditSelfModal from "../modals/EditSelfModal.jsx";
 import { useSideEffects } from "./SideEffects.jsx"
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useUserContext} from "../context/UserContext.jsx";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 function ChatPage(){
     const {recipientId} = useRecipientContext();
     const {user} = useUserContext();
     const {selectedContactDetails} = useSelectedContactContext();
+    const navigate = useNavigate();
 
     const [showEditSelfModal, setShowEditSelfModal] = useState(false);
     const [showAddGroupModal, setShowAddGroupModal] = useState(false);
     const [showEditGroupContactModal, setShowEditGroupContactModal] = useState(false);
     const [showEditUserContactModal, setShowEditUserContactModal] = useState(false);
 
+    useEffect(() => {
+        if (user?.userId === 0) {
+            console.log("You are logged out");
+            navigate("/login");
+        }
+    }, [user?.userId, navigate]);
+
+    /*if (user.userId === 0 || !user.isLoggedIn) {
+        navigate("/login");
+        return null;
+    }*/
+
     useSideEffects();
+
     return (
         <div className="chat-page">
             <div className="left-layout">

@@ -7,6 +7,7 @@ import {useRecipientContext} from "../context/RecipientContext.jsx";
 import {modalHide, useBootstrapModalClose} from "../service/utilities.js";
 import styles from '../style/EditSelfModal.module.css';
 import {useUserContext} from "../context/UserContext.jsx";
+import {BASE_URL} from "../config.js";
 
 
 function NewMemberComp({contact, setNewMemberIds}){
@@ -82,6 +83,12 @@ function EditGroupContactModal({onClose}){
     const [oldMemberIds, setOldMemberIds] = useState([]);       // User-ID's    (old members)
     const [newMemberIds, setNewMemberIds] = useState([]);       // User-ID's    (new members)
 
+    const [groupNameError, setGroupNameError] = useState(null);
+    const [contactNameError, setContactNameError] = useState(null);
+    const [picFormatError, setPicFormatError] = useState(null);
+    const [picSizeError, setPicSizeError] = useState(null);
+    const [groupMemberError, setGroupMemberError] = useState(null);
+
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(selectedContactDetails.dpPath);
     const oldDpPath = selectedContactDetails.dpPath;
@@ -104,9 +111,22 @@ function EditGroupContactModal({onClose}){
         editedGroupContactData.append("profilePic", selectedFile);
         editedGroupContactData.append("isDpChanged",isDpChanged);
 
-        await editGroupContact(editedGroupContactData);
-
-        modalHide("editGroupModal");
+        try{
+            setGroupNameError(null);
+            setContactNameError(null);
+            setPicFormatError(null);
+            setPicSizeError(null);
+            setGroupMemberError(null);
+            await editGroupContact(editedGroupContactData);
+            modalHide("editGroupModal");
+        }catch(error){
+            const actualErrorMessage = error.message;
+            if(actualErrorMessage.includes("Group Name")) setGroupNameError(actualErrorMessage);
+            else if(actualErrorMessage.includes("Nickname")) setContactNameError(actualErrorMessage);
+            else if(actualErrorMessage.includes("type")) setPicFormatError(actualErrorMessage);
+            else if(actualErrorMessage.includes("size")) setPicSizeError(actualErrorMessage);
+            else if(actualErrorMessage.includes("member")) setGroupMemberError(actualErrorMessage);
+        }
     }
 
     useEffect(() => {
@@ -178,6 +198,11 @@ function EditGroupContactModal({onClose}){
                                                         name="groupName"
                                                         onChange={(e)=>handleNewGroupName(e)} required
                                                         value={newGroupName} />
+                                                {groupNameError && (
+                                                    <div style={{color:'red'}}>
+                                                        {groupNameError}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +219,7 @@ function EditGroupContactModal({onClose}){
                                                 <div className={styles.imageContainer}>
 
                                                     {previewUrl && !selectedFile && (
-                                                        <img className={styles.image} src={`http://localhost:8080/dp/${previewUrl}`} alt="Profile Pic Preview"/>)}
+                                                        <img className={styles.image} src={`${BASE_URL}/dp/${previewUrl}`} alt="Profile Pic Preview"/>)}
                                                     {previewUrl && selectedFile && (
                                                         <img className={styles.image} src={`${previewUrl}`} alt="Profile Pic Preview"/>)}
                                                     {!previewUrl && !selectedFile && (
@@ -212,6 +237,16 @@ function EditGroupContactModal({onClose}){
                                                                onChange={handleFileChange} accept="image/*"/>
                                                     </div>
                                                 </div>
+                                                {picFormatError && (
+                                                    <div style={{color:'red'}}>
+                                                        {picFormatError}
+                                                    </div>
+                                                )}
+                                                {picSizeError && (
+                                                    <div style={{color:'red'}}>
+                                                        {picSizeError}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -231,6 +266,11 @@ function EditGroupContactModal({onClose}){
                                                         name="nickName"
                                                         onChange={(e)=>handleNewNickName(e)} required
                                                         value={newNickName} />
+                                                {contactNameError && (
+                                                    <div style={{color:'red'}}>
+                                                        {contactNameError}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -250,6 +290,11 @@ function EditGroupContactModal({onClose}){
                                                                     newMemberIds={newMemberIds}
                                                                     setNewMemberIds={setNewMemberIds}
                                                                     existingUser={oldMember} />))}
+                                                {groupMemberError && (
+                                                    <div style={{color:'red'}}>
+                                                        {groupMemberError}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -269,6 +314,11 @@ function EditGroupContactModal({onClose}){
                                                     <NewMemberComp key={contact.id}
                                                                         setNewMemberIds={setNewMemberIds}
                                                                         contact={contact} />))}
+                                                {groupMemberError && (
+                                                    <div style={{color:'red'}}>
+                                                        {groupMemberError}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

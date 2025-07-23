@@ -3,28 +3,28 @@ import {useNavigate} from "react-router-dom";
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import {useUserContext} from "../context/UserContext.jsx";
 import {notifyProfileUpdate,signout} from "../service/service.js";
-import styles from '../style/navbar.module.css'
-import toputil from "../style/topUtil.module.css";
+import styles from '../style/navbar.module.css';
+import { logout } from '../service/utilities.js'
+import {useStompClientContext} from "../context/StompClientContext.jsx";
+import {useContactsContext} from "../context/ContactsContext.jsx";
 
 function NavbarSubmenuComp(){
 
-    const {setRecipientId} = useRecipientContext();
-    const navigate = useNavigate();
-    const {setSelectedContactDetails,resetContact} = useSelectedContactContext();
-    const {user, setUser, resetUser} = useUserContext();
+    const { resetContacts } = useContactsContext();
+    const {resetRecipientId, resetPreviousContactId} = useRecipientContext();
+    const {resetSelectedContact} = useSelectedContactContext();
+    const { resetStomp } = useStompClientContext();
+    const {user, resetUser} = useUserContext();
 
+    const navigate = useNavigate();
 
     const handleSignOut = async () => {
         try {
             await signout(user.userId);
             await notifyProfileUpdate(user.userId);
 
-            console.log("Sign Out");
-            localStorage.removeItem('token');
-            setRecipientId(0);
-            setSelectedContactDetails(() => resetContact);
-            setUser(resetUser);
-            navigate("/login");
+            logout({
+                resetUser,resetContacts,resetRecipientId,resetPreviousContactId,resetSelectedContact,resetStomp,navigate});
         } catch (error) {
             console.error("Error during sign-out flow:", error);
         }

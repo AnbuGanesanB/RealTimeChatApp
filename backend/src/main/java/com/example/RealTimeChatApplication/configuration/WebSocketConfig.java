@@ -30,6 +30,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/user", "/group");  // Message destinations
         config.setApplicationDestinationPrefixes("/app"); // Message mappings
-        config.setUserDestinationPrefix("/user"); // For user-specific queues
+        config.setUserDestinationPrefix("/user");
     }
 }

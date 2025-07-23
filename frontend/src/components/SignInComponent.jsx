@@ -1,4 +1,4 @@
-function SignInComponent({ handleSignInSubmit }){
+function SignInComponent({ handleSignInSubmit, signInError }) {
 
     return (
         <form onSubmit={(event) => handleSignInSubmit(event)}>
@@ -26,6 +26,11 @@ function SignInComponent({ handleSignInSubmit }){
                     required
                 />
             </div>
+            {signInError && (
+                <div style={{color:'red'}}>
+                    {signInError}
+                </div>
+            )}
             <button type="submit" className="btn btn-primary">
                 SignIn
             </button>

@@ -19,4 +19,6 @@ public interface UserRepo extends JpaRepository<User,Integer> {
             "AND u.id NOT IN (SELECT c.contactPerson.id FROM Contact c WHERE c.owner.id = :ownerId AND c.type = 'USER')")
     List<User> findUsersNotInContacts(@Param("searchTerm") String searchTerm,
                                       @Param("ownerId") Integer ownerId);
+
+    boolean existsByEmailId(String email);
 }

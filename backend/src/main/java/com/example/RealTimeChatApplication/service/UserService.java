@@ -1,8 +1,11 @@
 package com.example.RealTimeChatApplication.service;
 
+import com.example.RealTimeChatApplication.configuration.ProfilePicConfig;
+import com.example.RealTimeChatApplication.exception.UserException;
 import com.example.RealTimeChatApplication.mapper.UserDetailMapper;
 import com.example.RealTimeChatApplication.model.contact.Contact;
 import com.example.RealTimeChatApplication.model.contact.RecipientType;
+import com.example.RealTimeChatApplication.model.group.Group;
 import com.example.RealTimeChatApplication.model.user.*;
 import com.example.RealTimeChatApplication.repositories.ContactRepo;
 import com.example.RealTimeChatApplication.repositories.UserRepo;
@@ -20,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -36,18 +36,10 @@ public class UserService {
     private final UserDetailMapper userDetailMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final GroupMembershipService groupMembershipService;
+    private final ProfilePicConfig profilePicConfig;
 
     User currentUser = null;
-
-    public User validate(String emailId, String password) {
-        Optional<User> optUser = userRepo.findByEmailId(emailId);
-
-        if(optUser.isEmpty()) throw new RuntimeException("No User Found");
-        User user = optUser.get();
-
-        if(password.equals(user.getPassword())) return user;
-        else throw new RuntimeException("Password Mismatch for Email: "+emailId);
-    }
 
     public ResponseEntity<Map<String, String>> authenticateUser(LoginDto loginDto) {
         try {
@@ -69,19 +61,18 @@ public class UserService {
         }catch (BadCredentialsException ex) {
 
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Invalid email or password.");
+            errorResponse.put("message", "Invalid email or password.");
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-
-        } catch (DisabledException ex) {
-
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Your account is disabled. Please contact support.");
-            return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
         }
     }
 
     @Transactional
     public void createNewUser(RegisterDto registerDto) {
+        //Check if Email-ID exists
+        if (userRepo.existsByEmailId(registerDto.getEmailId())) {
+            throw new UserException.EmailAlreadyExistsException("Provided Email-Id not seems yours!. Please provide your Mail-Id");
+        }
+
         User user = new User();
         user.setEmailId(registerDto.getEmailId());
         user.setPassword(new BCryptPasswordEncoder().encode(registerDto.getPassword()));
@@ -93,14 +84,22 @@ public class UserService {
         contactService.addNewUserContactManually(user,user);        // Creating self-contact for every new user
     }
 
-
     public User updateDisplayProfile(User user, String name, String aboutMe, boolean isDpChanged, MultipartFile profilePic){
+
+        if(name.trim().length()<2) throw new UserException.ShortUserNameException("Username should be minimum 2 characters");
+
         user.setUserName(name);
-        user.setAboutMe(aboutMe);
+        user.setAboutMe(aboutMe.isBlank() ? "Hello! Let's Talk..." : aboutMe);
         if(isDpChanged){
             if(profilePic==null){
                 user.setDpPath(null);
             }else{
+                if (!profilePicConfig.getAllowedTypes().contains(profilePic.getContentType())) {
+                    throw new UserException.FileTypeMismatchException("File type must be JPG or PNG only");
+                }
+                if(profilePic.getSize()>profilePicConfig.getMaxSize().toBytes()){
+                    throw new UserException.FileOverSizeException("Uploaded file size must be less than "+profilePicConfig.getMaxSize());
+                }
                 user = fileService.setProfilePicture(profilePic,user);
             }
         }
@@ -108,8 +107,15 @@ public class UserService {
     }
 
     public void sendUpdatedProfileDetails(User user) {
+        // Sending update to user's friends
         user.getContactOf().parallelStream().forEach(contact -> {
             contactService.sendUpdatedContactMessageToUser(contact.getOwner(), contact);
+        });
+        //  Sending update to all groups where user was enrolled.
+        //  (regardless of Membership status, As FE won't be subscribed to the Inactive membership-group)
+        groupMembershipService.getGroupMemberShips(user).forEach(groupMembership -> {
+            Group group = groupMembership.getGroupId();
+            contactService.sendUpdatedMemberInfoToGroup(user,group);
         });
     }
 

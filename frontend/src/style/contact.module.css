@@ -39,12 +39,12 @@
 }
 
 .contactCard {
-    border: 2px solid #773737;
+    border: 2px solid #347fa6;
     border-radius: 12px;
     padding: 10px;
     margin: 5px;
     cursor: pointer;
-    background-color: #c1cd18;
+    background-color: #347fa6;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -56,15 +56,16 @@
 }
 
 .contactCard:hover {
-    border: 2px solid #dd0f0f;
+    border: 2px solid #324d70;
 }
 
 .selected {
-    background-color: #6cc50d;
+    background-color: #5c46b6;
+    border: 2px solid #5c46b6;
 }
 
 .unread {
-    background-color: #cc3263;
+    background-color: #132775;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -85,10 +86,11 @@
     left: 160px;
     width: 20px;
     height: 20px;
-    background-color: #cc3263;
+    background-color: #09164c;
     border-radius: 5px;
     justify-content: center;
     align-items: center;
+    color: white;
 }
 
 .contentRow {
@@ -110,6 +112,6 @@
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
     font-size: 15px;
-    background-color: #5ecc32;
+    background-color: #9a7f28;
 }
 

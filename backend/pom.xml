@@ -62,19 +62,11 @@
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
-<!--Underlying DB is not MySql database-->
-<!--		<dependency>-->
-<!--			<groupId>com.mysql</groupId>-->
-<!--			<artifactId>mysql-connector-j</artifactId>-->
-<!--			<scope>runtime</scope>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>3.1.4</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

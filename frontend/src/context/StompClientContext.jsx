@@ -1,8 +1,13 @@
-import {createContext, useContext, useEffect, useRef, useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {useUserContext} from "./UserContext.jsx";
 import {Client} from "@stomp/stompjs";
 import {useContactsContext} from "./ContactsContext.jsx";
 import { WS_URL } from '../config';
+import {logout, updateGroupMemberDetails, updateGroupMemberInContactIsSelected} from "../service/utilities.js"
+import {useSelectedContactContext} from "./SelectedContactContext.jsx";
+import { useNavigate } from "react-router-dom";
+import {useRecipientContext} from "./RecipientContext.jsx";
+
 
 const getToken = () => {
     return localStorage.getItem("token");
@@ -12,8 +17,12 @@ const StompClientContext = createContext();
 
 export const StompClientProvider = ({children}) => {
 
-    const {user} = useUserContext();
-    const {contacts, updateContactMembers} = useContactsContext();
+    const {user, resetUser} = useUserContext();
+    const {setContacts, contacts, resetContacts} = useContactsContext();
+    const {resetRecipientId, resetPreviousContactId} = useRecipientContext();
+    const {selectedContactDetails, setSelectedContactDetails, resetSelectedContact} = useSelectedContactContext();
+
+    const navigate = useNavigate();
 
     const [stompClient, setStompClient] = useState(null);
     const [receivedMessage, setReceivedMessage] = useState("");
@@ -22,6 +31,17 @@ export const StompClientProvider = ({children}) => {
     const [isStompConnected, setIsStompConnected] = useState(false);
 
     const subscribedTopicsRef = useRef(new Map());
+
+    const resetStomp = useCallback(() => {
+        if (stompClient && stompClient.connected) {
+            stompClient.deactivate();
+        }
+        setStompClient(null);
+        setIsStompConnected(false);
+        subscribedTopicsRef.current.clear();
+        setUpdatedContact(null);
+        console.log("STOMP state reset.");
+    }, [stompClient]);
 
     const subscribeIfNotExists = (client, key, topic, callback) => {
         if (!client || !client.connected) {
@@ -45,6 +65,11 @@ export const StompClientProvider = ({children}) => {
         console.log("Current subscriptions: ",subscribedTopicsRef.current);
     };
 
+    const selectedContactRef = useRef(selectedContactDetails);
+
+    useEffect(() => {
+        selectedContactRef.current = selectedContactDetails;
+    }, [selectedContactDetails]);
 
     /**
      * On user Login -> Attempts to establish Websocket connection and thereby subscribing to topics
@@ -107,24 +132,28 @@ export const StompClientProvider = ({children}) => {
             onDisconnect: () => {
                 console.log('Disconnected from WebSocket server');
             },
-            onWebSocketClose: () => {
-                subscribedTopicsRef.current.clear();
-                setIsStompConnected(false);
+            onWebSocketClose: (event) => {
+                resetStomp();
                 console.log('WebSocket closed');
+
+                if (event.code === 1006) {
+                    console.warn('WS closed due to servers response', event);
+                    logout({
+                        resetUser,resetContacts,resetRecipientId,resetPreviousContactId,resetSelectedContact,resetStomp,navigate});
+                }
             }
+
         });
 
         client.activate(); // Establish connection
 
         // Cleanup WebSocket connection on logout or page refresh
         return () => {
-            client.deactivate();
             console.log("Cleaning up WebSocket connection voluntarily...");
-            setStompClient(null);
-            subscribedTopicsRef.current.clear();
+            resetStomp();
         };
 
-    }, [user.isLoggedIn]);
+    }, [user.isLoggedIn, user.userId]);
 
     useEffect(() => {
         console.log(`StompClient now is: ${stompClient}`);
@@ -145,6 +174,15 @@ export const StompClientProvider = ({children}) => {
                         setReceivedMessage(newMessage);
                     }
                 );
+
+                subscribeIfNotExists(stompClient,
+                    `group-${groupId}-updates`,
+                    `/group/${groupId}/queue/updates`,
+                    (update) => {
+                        const newUpdatedMemberInfo = JSON.parse(update.body);
+                        updateGroupMember(groupId,newUpdatedMemberInfo, selectedContactRef.current);
+                    }
+                );
             });
 
         contacts
@@ -156,11 +194,24 @@ export const StompClientProvider = ({children}) => {
                     `group-${groupId}-messages`,
                     `/group/${groupId}/queue/messages`);
 
+                unsubscribeIfSubscribed(stompClient,
+                    `group-${groupId}-updates`,
+                    `/group/${groupId}/queue/updates`);
+
             });
     },[contacts, stompClient, isStompConnected]);
 
+    const updateGroupMember = (groupId, updatedMemberInfo, currentSelectedContactDetails) => {
+
+        setContacts(prevContacts => updateGroupMemberDetails(prevContacts, groupId, updatedMemberInfo));
+
+        if(groupId === currentSelectedContactDetails.contactPersonOrGroupId && currentSelectedContactDetails.type === "GROUP") {
+            setSelectedContactDetails(prevDetails => updateGroupMemberInContactIsSelected(prevDetails,updatedMemberInfo));
+        }
+    }
+
     return (
-        <StompClientContext.Provider value={{stompClient, receivedMessage, updatedContact, newReceivedContact}}>
+        <StompClientContext.Provider value={{stompClient, receivedMessage, updatedContact, newReceivedContact, resetStomp}}>
             {children}
         </StompClientContext.Provider>
     );

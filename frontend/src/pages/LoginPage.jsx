@@ -3,15 +3,24 @@ import SignInComponent from './../components/SignInComponent';
 import { useNavigate } from "react-router-dom";
 import './../style/LoginPage.css'
 import { useUserContext } from './../context/UserContext.jsx';
-import {useRecipientContext} from "../context/RecipientContext.jsx";
 import {fetchUser, notifyProfileUpdate} from './../service/service.js'
 import { BASE_URL } from '../config';
+import {useEffect, useState} from "react";
+import { Modal } from "bootstrap"
 
 function LoginPage() {
 
-    const {setRecipientId} = useRecipientContext();
     const { user, setUser } = useUserContext();
     const navigate = useNavigate();
+    const [signUpError, setSignUpError] = useState('');
+    const [signInError, setSignInError] = useState(null);
+
+    useEffect(() => {
+        if (user?.userId !== 0) {
+            console.log("You are already logged in");
+            navigate("/home");
+        }
+    }, [user?.userId, navigate]);
 
     const handleSignInSubmit = async (event) => {
         event.preventDefault();
@@ -27,14 +36,15 @@ function LoginPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Login failed! Please check your credentials.");
+                const errorResponse = await response.json();
+                throw new Error(errorResponse.message);
             }
 
             const result = await response.json();
             console.log("Login Successful:", result);
 
             event.target.reset();
-            setRecipientId(0);
+            //setRecipientId(0);
 
             if(result?.token){
                 localStorage.setItem("token", result.token);
@@ -48,12 +58,13 @@ function LoginPage() {
 
         } catch (error) {
             console.error("Error:", error.message);
-            alert("Login failed! Please try again.");
+            setSignInError(error.message);
         }
     };
 
     const handleSignUpSubmit = async (event) => {
         event.preventDefault();
+
 
         const formData = new FormData(event.target);
         const newUserDetails = Object.fromEntries(formData.entries());
@@ -66,22 +77,36 @@ function LoginPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Registration failed. Please try again!!.");
+                const errorData = await response.json();
+
+                if ('error' in errorData) {
+                    throw new Error(errorData.error);
+                } else {
+                    const allMessages = Object.values(errorData).join('\n');
+                    throw new Error(allMessages);
+                }
             }
 
+            setSignUpError('');
             console.log("Registration Successful:");
-
             event.target.reset();
+
         } catch (error) {
+            setSignUpError(error.message);
             console.error("Error:", error.message);
-            alert("Registration failed! Please try again.");
+            //alert("Registration failed! Please try again.");
+
+        } finally {
+            const modalEl = document.getElementById('SignUpConfirmModal');
+            if (modalEl) {
+                const modalInstance = Modal.getOrCreateInstance(modalEl);
+                modalInstance.show();
+            }
         }
     };
 
     return(
         <div className="login-screen">
-            {/*<img src="../assets/Welcome%201%20(1).jpg" alt="home page image">
-            </img>*/}
             <div className="login-page-card">
                 <nav>
                     <div className="nav nav-tabs d-flex w-100" id="nav-tab" role="tablist">
@@ -113,7 +138,9 @@ function LoginPage() {
                         aria-labelledby="nav-login-tab"
                     >
                         <h3>Sign-In Form</h3>
-                        <SignInComponent handleSignInSubmit={handleSignInSubmit} />
+                        <SignInComponent
+                            handleSignInSubmit={handleSignInSubmit}
+                            signInError={signInError} />
                     </div>
 
                     <div
@@ -125,6 +152,7 @@ function LoginPage() {
                         <h3>Sign-Up Form</h3>
                         <SignUpComponent
                             handleSignUpSubmit={handleSignUpSubmit}
+                            signUpError={signUpError}
                         />
                     </div>
                 </div>

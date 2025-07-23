@@ -1,6 +1,7 @@
 import {useSelectedContactContext} from "../context/SelectedContactContext.jsx";
 import styles from '../style/navContactDisplay.module.css';
 import {useUserContext} from "../context/UserContext.jsx";
+import {BASE_URL} from '../config';
 
 function NavContactDisplay() {
 
@@ -14,7 +15,7 @@ function NavContactDisplay() {
             <div className={styles.contactInfo}>
                 <div className={styles.avatar}>
                     {selectedContactDetails.dpAvailable ?
-                        (<img className={styles.avatarDp} src={`http://localhost:8080/dp/${selectedContactDetails.dpPath}`}
+                        (<img className={styles.avatarDp} src={`${BASE_URL}/dp/${selectedContactDetails.dpPath}`}
                         />)
                         : (<div className={styles.initials}>
                             {selectedContactDetails.initials}
@@ -38,7 +39,7 @@ function NavContactDisplay() {
                             {selectedContactDetails.aboutMe || ""}
                         </div>)
                         : (<div className={styles.contactLine2}>
-                            {`${selectedContactDetails.groupMemberDetails.length} Participants`}
+                            {`${selectedContactDetails.groupMemberDetails.length - selectedContactDetails.removedMemberIds.length} Participants`}
                         </div>)}
                 </div>
             </div>

@@ -1,5 +1,5 @@
 .container {
-    background-color: #ac7db3;   /* For visibility */
+    background-color: #bd9e6c;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -29,7 +29,7 @@
     justify-content: center;
     vertical-align: center;
     cursor: pointer;
-    background-color: #cac00b;
+    background-color: #347fa6;
     border-radius: 5px;
 }
 
@@ -74,7 +74,9 @@
     position: absolute;
     top: 15px;
     padding: 5px;
-    background-color: #774d7c;
+    background-color: white;
+    border: 1px solid rgb(12, 60, 85);
+    //background-color: #774d7c;
     min-height: 120px;
     width: 170px;
 }

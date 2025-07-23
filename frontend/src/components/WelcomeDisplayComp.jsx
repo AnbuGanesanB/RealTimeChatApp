@@ -7,8 +7,8 @@ function WelcomeDisplayComp() {
 
     return (
         <div className={styles.welcomeContainer}>
-            <h2>Hi {user.name}!</h2>
-            <h3>Welcome to Chat App!!</h3>
+            <h1>Hi {user.name}!</h1>
+            <h2>Let's Talk!!</h2>
         </div>
     )
 }
