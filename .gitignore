@@ -10,6 +10,7 @@ backend/target/
 backend/.classpath
 backend/.project
 backend/.settings/
+backend/src/main/resources/application.properties
 
 # Frontend (Node/Vite/React)
 frontend/node_modules/
