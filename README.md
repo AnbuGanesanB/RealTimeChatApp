@@ -11,12 +11,15 @@ A full-stack real-time chat application built using Spring Boot (Java) and React
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
+- [ERD Data Model](#erd-data-model)
 - [Walkthrough (with Screenshots)](#walkthrough-with-screenshots)
 - [Future Scope](#future-scope)
+- [Contribution](#contribution)
+- [License](#license)
 
 ---
 
-## 🧭 Introduction
+<h2 id="introduction">🧭 Introduction</h2>
 
 This project mimics real-world messaging platforms, inspired from Teams and Skype. It includes:
 
@@ -28,7 +31,7 @@ This project mimics real-world messaging platforms, inspired from Teams and Skyp
 
 ---
 
-## ✨ Features
+<h2 id="features">✨ Features</h2>
 
 - ✅ Real-time messaging using WebSocket (STOMP)
 - ✅ User login/signup via JWT
@@ -41,7 +44,7 @@ This project mimics real-world messaging platforms, inspired from Teams and Skyp
 
 ---
 
-## 🧰 Tech Stack
+<h2 id="prerequisites">🧰 Tech Stack</h2>
 
 ### 🔙 Backend (Spring Boot)
 
@@ -66,7 +69,7 @@ This project mimics real-world messaging platforms, inspired from Teams and Skyp
 
 ---
 
-## 🔧 Prerequisites
+<h2 id="">🔧 Prerequisites</h2>
 
 Ensure the following are installed:
 
@@ -83,7 +86,7 @@ Ensure the following are installed:
 
 ---
 
-## 🚀 Getting Started
+<h2 id="getting-started">🚀 Getting Started</h2>
 
 ### 🗂️ Setup Folder and Clone
 
@@ -142,30 +145,36 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-## 🖼 Walkthrough (with Screenshots)
+<h2 id="erd-data-model">🛢️ ERD Data Model</h2>
 
-### 📋 Contents:
-
-- [Registration Page](#registration-page)
-- [Home Page](#home-page)
-- [Display Picture Setting](#display-picture-setting)
-- [User "About Me" Status](#user-about-me-status)
-- [Adding Friends](#adding-friends)
-- [Private Chat](#private-chat)
-- [Add Group](#add-group)
-- [Group Chat](#group-chat)
-- [Edit Group](#edit-group)
-- [Custom Nicknames](#custom-nicknames)
-- [File Transfer](#file-transfer)
-- [Online Status Selector](#online-status-selector)
-- [All Contacts](#all-contacts)
-- [Only Users](#only-users)
-- [Only Groups](#only-groups)
-- [Signout](#signout)
+![ERD](screenshots/ERD.png)
 
 ---
 
-### 🔐 Registration Page
+<h2 id="walkthrough-with-screenshots">🖼 Walkthrough (with Screenshots)</h2>
+
+### 📋 Contents:
+
+- [Registration Page](#img1)
+- [Home Page](#img2)
+- [Display Picture Setting](#img3)
+- [User "About Me" Status](#img4)
+- [Adding Friends](#img5)
+- [Private Chat](#img6)
+- [Add Group](#img7)
+- [Group Chat](#img8)
+- [Edit Group](#img9)
+- [Custom Nicknames](#img10)
+- [File Transfer](#img11)
+- [Online Status Selector](#img12)
+- [All Contacts](#img13)
+- [Only Users](#img14)
+- [Only Groups](#img15)
+- [Signout](#img16)
+
+---
+
+<h3 id="img1">🔐 Registration Page</h3>
 
 ![Registration](screenshots/UserSelfRegister.jpg)
 
@@ -175,7 +184,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🏠 Home Page
+<h3 id="img2">🏠 Home Page</h3>
 
 ![Home](screenshots/InitialHomeScreen.jpg)
 
@@ -184,7 +193,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🖼️ Display Picture Setting
+<h3 id="img3">🖼️ Display Picture Setting</h3>
 
 ![Display Picture](screenshots/self-Dp.jpg)
 
@@ -195,7 +204,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🧑‍💼 User "About Me" Status
+<h3 id="img4">🧑‍💼 User "About Me" Status</h3>
 
 ![About Me](screenshots/self-AboutMe.jpg)
 
@@ -205,7 +214,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### ➕ Adding Friends
+<h3 id="img5">➕ Adding Friends</h3>
 
 ![Add Friend](screenshots/addingFriends.jpg)
 
@@ -215,7 +224,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 💬 Private Chat
+<h3 id="img6">💬 Private Chat</h3>
 
 ![Private Chat](screenshots/privateChat.jpg)
 
@@ -224,7 +233,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 👥 Add Group
+<h3 id="img7">👥 Add Group</h3>
 
 ![Add Group](screenshots/addGroup.jpg)
 
@@ -236,7 +245,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🧵 Group Chat
+<h3 id="img8">🧵 Group Chat</h3>
 
 ![Group Chat](screenshots/groupChat.jpg)
 
@@ -246,7 +255,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🛠️ Edit Group
+<h3 id="img9">🛠️ Edit Group</h3>
 
 ![Edit Group](screenshots/editGroup.jpg)
 
@@ -259,7 +268,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🏷️ Custom Nicknames
+<h3 id="img10">🏷️ Custom Nicknames</h3>
 
 - Set nicknames(contact name) for your contacts (private to you).
 - Helpful for personalization.
@@ -271,7 +280,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 📁 File Transfer
+<h3 id="img11">📁 File Transfer</h3>
 
 ![File Transfer](screenshots/fileTransfer.jpg)
 
@@ -285,7 +294,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🟢 Online Status Selector
+<h3 id="img12">🟢 Online Status Selector</h3>
 
 ![Status](screenshots/onlineStatusSelector.jpg)
 
@@ -296,7 +305,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 📒 All Contacts
+<h3 id="img13">📒 All Contacts</h3>
 
 ![All Contacts](screenshots/allContacts.jpg)
 
@@ -305,7 +314,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 👤 Only Users
+<h3 id="img14">👤 Only Users</h3>
 
 ![User Contacts](screenshots/onlyUsers.jpg)
 
@@ -315,7 +324,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 👥 Only Groups
+<h3 id="img15">👥 Only Groups</h3>
 
 ![Group Contacts](screenshots/onlyGroups.jpg)
 
@@ -324,7 +333,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-### 🚪 Signout
+<h3 id="img16">🚪 Signout</h3>
 
 ![Signout](screenshots/signout.jpg)
 
@@ -335,7 +344,7 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-## 🔮 Future Scope
+<h2 id="future-scope">🔮 Future Scope</h2>
 
 - End-to-End Encryption (E2EE)
 - Audio/Video Calling (via WebRTC)
@@ -347,12 +356,12 @@ In XAMPP Control Panel, click "Stop" for Apache and MySQL
 
 ---
 
-## 🙌 Contributing
+<h2 id="contribution">🙌 Contribution</h2>
 
 This is a personal project meant for learning and showcasing skills, but feel free to fork and experiment.
 
 ---
 
-## 📄 License
+<h2 id="license">📄 License</h2>
 
 MIT — Free to use for personal and professional demos.
